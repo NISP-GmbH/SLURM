@@ -1,0 +1,23 @@
+#!/bin/bash
+################################################################################
+# Copyright (C) 2019-2024 NI SP GmbH
+# All Rights Reserved
+#
+# info@ni-sp.com / www.ni-sp.com
+#
+# We provide the information on an as is basis.
+# We provide no warranties, express or implied, related to the
+# accuracy, completeness, timeliness, useability, and/or merchantability
+# of the data and are not liable for any loss, damage, claim, liability,
+# expense, or penalty, or for any direct, indirect, special, secondary,
+# incidental, consequential, or exemplary damages or lost profit
+# deriving from the use or misuse of this information.
+################################################################################
+# Version v1.7 including accounting support
+
+RED='\033[0;31m'; GREEN='\033[0;32m'; GREY='\033[0;37m'; BLUE='\034[0;37m'; NC='\033[0m'
+ORANGE='\033[0;33m'; BLUE='\033[0;34m'; WHITE='\033[0;97m'; UNLIN='\033[0;4m'
+echo -e "${GREEN}###################################################"
+echo -e "Welcome to the SLURM Installation Script"
+echo -e "###################################################${NC}"
+sleep 1.2
