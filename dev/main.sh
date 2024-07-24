@@ -2,15 +2,15 @@
 slurm_accounting_support=0
 OSVERSION=""
 OSDISTRO=""
-SUPPORTED_DISTROS="Centos 7, Centos 8, Centos 9, Ubuntu 18.04, Ubuntu 20.04 and Ubuntu 22.04"
+SUPPORTED_DISTROS="Centos, Rocky Linux and Almalinux: 7, 8 and 9; Ubuntu: 18.04, 20.04 and 22.04"
 
 main()
 {
 	checkLinuxOsDistro
 	askSlurmAccountingSupport
-	if echo $OSDISTRO | egrep -iq "centos"
+	if echo $OSDISTRO | egrep -iq "redhat_based"
 	then
-		main_centos
+		main_redhat
 	elif echo $OSDISTRO | egrep -iq "ubuntu"
 	then
 		main_ubuntu

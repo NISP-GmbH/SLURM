@@ -22,18 +22,18 @@ echo -e "Welcome to the SLURM Installation Script"
 echo -e "###################################################${NC}"
 sleep 1.2
 
-main_centos()
+main_redhat_based()
 {
     disableSElinux
-    checkCentosVersion
+    checkRedHatBasedVersion
     createRequiredUsers
-    setupRequiredCentosRepositories
-    installMariaDBforCentos
-    installMungeForCentos
-    setupRngToolsForCentos
-    setupMungeForCentos
-    buildSlurmForCentos
-    setupSlurmForCentos
+    setupRequiredRedHatBasedRepositories
+    installMariaDBforRedHatBased
+    installMungeForRedHatBased
+    setupRngToolsForRedHatBased
+    setupMungeForRedHatBased
+    buildSlurmForRedHatBased
+    setupSlurmForRedHatBased
     createRequiredFiles
     fixingPermissions
     enableSystemdServices
@@ -41,7 +41,7 @@ main_centos()
     exit 0
 }
 
-setupSlurmForCentos()
+setupSlurmForRedHatBased()
 {
 	cd ~/rpmbuild/RPMS/x86_64/
 
@@ -182,7 +182,7 @@ EOF
 		fi
 }
 
-buildSlurmForCentos()
+buildSlurmForRedHatBased()
 {
 	# build and install SLURM
 	sudo yum install python3 gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build  perl-ExtUtils-MakeMaker.noarch -y
@@ -241,7 +241,7 @@ buildSlurmForCentos()
 	# sudo yum install cpan -y
 }
 
-setupMungeForCentos()
+setupMungeForRedHatBased()
 {
 	sudo /usr/sbin/create-munge-key -r -f
 	sudo sh -c  "dd if=/dev/urandom bs=1 count=1024 > /etc/munge/munge.key"
@@ -252,7 +252,7 @@ setupMungeForCentos()
 	sudo systemctl start munge
 }
 
-setupRngToolsForCentos()
+setupRngToolsForRedHatBased()
 {
 	sudo yum install rng-tools -y
 	sudo rngd -r /dev/urandom
@@ -273,7 +273,7 @@ EOF
 	fi
 }
 
-installMungeForCentos()
+installMungeForRedHatBased()
 {
 	if [ "$OSVERSION" == "7" ] ; then
 	    sudo yum install munge munge-libs munge-devel -y
@@ -288,7 +288,7 @@ installMungeForCentos()
 	fi
 }
 
-installMariaDBforCentos()
+installMariaDBforRedHatBased()
 {
 	if [ "$slurm_accounting_support" == "1" ]
 	then
@@ -307,7 +307,7 @@ installMariaDBforCentos()
 	fi
 }
 
-checkCentosVersion()
+checkRedHatBasedVersion()
 {
 	OSVERSION="7"
 	# [ "`hostnamectl | grep Kernel | grep el8`" != "" ] && OSVERSION="8"
@@ -327,7 +327,7 @@ checkCentosVersion()
 	fi
 }
 
-setupRequiredCentosRepositories()
+setupRequiredRedHatBasedRepositories()
 {
 	sudo yum install epel-release -y
 	if [ "$OSVERSION" == "7" ] ; then
@@ -348,33 +348,28 @@ setupRequiredCentosRepositories()
 }
 checkLinuxOsDistro()
 {
-	# Check for lsb_release command
-	if command -v lsb_release > /dev/null 2>&1
-	then
-    	OSDISTRO=$(lsb_release -si)
-	else
-		if [ -e /etc/issue ]
-		then
-			if cat /etc/issue | egrep -iq "centos"
-			then
-				OSDISTRO="centos"
-			elif cat /etc/issue | egrep -iq "ubuntu"
-			then
-				OSDISTRO="ubuntu"
-			else
-				if [ -e /etc/os-release ]
-				then
-					if cat /etc/os-release | egrep -iq "centos"
-					then
-						OSDISTRO="centos"
-					else
-						OSDISTRO="Unknown"
-					fi
-				fi
-			fi
-		fi
-	fi
+    if [ -f /etc/redhat-release ]
+    then
+        OSDISTRO="redhat_based"
+    else
+        if [ -f /etc/issue ]
+        then
+            if cat /etc/issue | egrep -iq "ubuntu"
+            then
+                OSDISTRO="ubuntu"
+            else
+                OSDISTRO="unknown"
+            fi
+        else
+            OSDISTRO="unknown"
+        fi
+    fi
 	echo "The current Linux distribution is: $OSDISTRO"
+    if [[ "${OSDISTRO}" == "unknown" ]]
+    then
+        echo "Linux distribution not recognized. Aborting..."
+        exit 4
+    fi
 }
 
 createMysqlDatabase()
@@ -882,15 +877,15 @@ setupRequiredUbuntuRepositories()
 slurm_accounting_support=0
 OSVERSION=""
 OSDISTRO=""
-SUPPORTED_DISTROS="Centos 7, Centos 8, Centos 9, Ubuntu 18.04, Ubuntu 20.04 and Ubuntu 22.04"
+SUPPORTED_DISTROS="Centos, Rocky Linux and Almalinux: 7, 8 and 9; Ubuntu: 18.04, 20.04 and 22.04"
 
 main()
 {
 	checkLinuxOsDistro
 	askSlurmAccountingSupport
-	if echo $OSDISTRO | egrep -iq "centos"
+	if echo $OSDISTRO | egrep -iq "redhat_based"
 	then
-		main_centos
+		main_redhat
 	elif echo $OSDISTRO | egrep -iq "ubuntu"
 	then
 		main_ubuntu

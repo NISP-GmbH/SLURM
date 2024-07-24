@@ -1,32 +1,27 @@
 checkLinuxOsDistro()
 {
-	# Check for lsb_release command
-	if command -v lsb_release > /dev/null 2>&1
-	then
-    	OSDISTRO=$(lsb_release -si)
-	else
-		if [ -e /etc/issue ]
-		then
-			if cat /etc/issue | egrep -iq "centos"
-			then
-				OSDISTRO="centos"
-			elif cat /etc/issue | egrep -iq "ubuntu"
-			then
-				OSDISTRO="ubuntu"
-			else
-				if [ -e /etc/os-release ]
-				then
-					if cat /etc/os-release | egrep -iq "centos"
-					then
-						OSDISTRO="centos"
-					else
-						OSDISTRO="Unknown"
-					fi
-				fi
-			fi
-		fi
-	fi
+    if [ -f /etc/redhat-release ]
+    then
+        OSDISTRO="redhat_based"
+    else
+        if [ -f /etc/issue ]
+        then
+            if cat /etc/issue | egrep -iq "ubuntu"
+            then
+                OSDISTRO="ubuntu"
+            else
+                OSDISTRO="unknown"
+            fi
+        else
+            OSDISTRO="unknown"
+        fi
+    fi
 	echo "The current Linux distribution is: $OSDISTRO"
+    if [[ "${OSDISTRO}" == "unknown" ]]
+    then
+        echo "Linux distribution not recognized. Aborting..."
+        exit 4
+    fi
 }
 
 createMysqlDatabase()
