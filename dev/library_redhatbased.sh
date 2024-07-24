@@ -192,7 +192,7 @@ buildSlurmForRedHatBased()
 	    # export VER=23.02.2
 	fi
 	# https://download.schedmd.com/slurm/slurm-20.02.3.tar.bz2
-	wget https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
+	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
 
 	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-$VER.tar.bz2 ... Exiting && exit
 
