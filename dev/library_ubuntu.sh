@@ -227,7 +227,7 @@ buildSlurmForUbuntu()
 	sudo DEBIAN_FRONTEND=noninteractive apt -y upgrade
 	. /etc/os-release
 
-	sudo DEBIAN_FRONTEND=noninteractive apt -y install python3 gcc openssl numactl hwloc lua5.3 man2html make ruby ruby-dev libmunge-dev libpam0g-dev
+	sudo DEBIAN_FRONTEND=noninteractive apt -y install bzip2 python3 gcc openssl numactl hwloc lua5.3 man2html make ruby ruby-dev libmunge-dev libpam0g-dev
 	sudo /usr/bin/gem install fpm
     mkdir slurm-tmp
     cd slurm-tmp
