@@ -216,7 +216,7 @@ buildSlurmForRedHatBased()
 	    # export VER=23.02.2
 	fi
 	# https://download.schedmd.com/slurm/slurm-20.02.3.tar.bz2
-	wget https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
+	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
 
 	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-$VER.tar.bz2 ... Exiting && exit
 
@@ -782,7 +782,7 @@ buildSlurmForUbuntu()
 	sudo DEBIAN_FRONTEND=noninteractive apt -y upgrade
 	. /etc/os-release
 
-	sudo DEBIAN_FRONTEND=noninteractive apt -y install python3 gcc openssl numactl hwloc lua5.3 man2html make ruby ruby-dev libmunge-dev libpam0g-dev
+	sudo DEBIAN_FRONTEND=noninteractive apt -y install bzip2 python3 gcc openssl numactl hwloc lua5.3 man2html make ruby ruby-dev libmunge-dev libpam0g-dev
 	sudo /usr/bin/gem install fpm
     mkdir slurm-tmp
     cd slurm-tmp
@@ -796,7 +796,7 @@ buildSlurmForUbuntu()
 	    export VER=22.05.9
 	    # export VER=23.02.2
 	fi
-	wget https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
+	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
 
 	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-$VER.tar.bz2 ... Exiting && exit
 
@@ -877,7 +877,7 @@ setupRequiredUbuntuRepositories()
 slurm_accounting_support=0
 OSVERSION=""
 OSDISTRO=""
-SUPPORTED_DISTROS="Centos, Rocky Linux and Almalinux: 7, 8 and 9; Ubuntu: 18.04, 20.04 and 22.04"
+SUPPORTED_DISTROS="Centos, Rocky Linux and Almalinux: 7, 8 and 9; Ubuntu: 18.04, 20.04, 22.04 and 24.04"
 
 main()
 {

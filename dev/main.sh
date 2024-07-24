@@ -2,7 +2,7 @@
 slurm_accounting_support=0
 OSVERSION=""
 OSDISTRO=""
-SUPPORTED_DISTROS="Centos, Rocky Linux and Almalinux: 7, 8 and 9; Ubuntu: 18.04, 20.04 and 22.04"
+SUPPORTED_DISTROS="Centos, Rocky Linux and Almalinux: 7, 8 and 9; Ubuntu: 18.04, 20.04, 22.04 and 24.04"
 
 main()
 {
