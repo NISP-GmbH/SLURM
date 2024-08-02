@@ -1,4 +1,4 @@
-main_redhat_based()
+main_redhat()
 {
     disableSElinux
     checkRedHatBasedVersion
