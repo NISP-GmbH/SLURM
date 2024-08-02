@@ -22,7 +22,7 @@ echo -e "Welcome to the SLURM Installation Script"
 echo -e "###################################################${NC}"
 sleep 1.2
 
-main_redhat_based()
+main_redhat()
 {
     disableSElinux
     checkRedHatBasedVersion
