@@ -9,6 +9,7 @@ A script that can download, extract, compile and install Slurm for you.
 - Centos: 7, 8 and 9
 - Rocky Linux: 7, 8 and 9
 - Alma Linux: 7, 8 and 9
+- Amazon Linux: 2023+
 
 ## Features
 - Can be installed with and without accounting support

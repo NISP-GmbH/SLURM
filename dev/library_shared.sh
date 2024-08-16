@@ -10,7 +10,17 @@ checkLinuxOsDistro()
             then
                 OSDISTRO="ubuntu"
             else
-                OSDISTRO="unknown"
+                if [ -f /etc/os-release ]
+                then
+                    if cat /etc/os-release | egrep -iq amazon
+                    then
+                        OSDISTRO="redhat_based"
+                    else
+                        OSDISTRO="unknown"
+                    fi
+                else
+                    OSDISTRO="unknown"
+                fi
             fi
         else
             OSDISTRO="unknown"
