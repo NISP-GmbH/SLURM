@@ -251,11 +251,11 @@ This is a dummy package to satisfy the mysql-devel dependency.
 * Wed Aug 16 2023 Your Name <your.email@example.com> - 5.0.0-1
 - Initial dummy package
 EOF
-        sudo env HOME=/root mkdir -p ~/rpmbuild/RPMS/noarch/
+        sudo env HOME=/root mkdir -p /root/rpmbuild/RPMS/noarch/
         sudo env HOME=/root rpmbuild -bb /root/dummy-mysql-devel.spec
         sudo env HOME=/root rpmbuild -bb /root/dummy-mariadb-devel.spec
-        sudo env HOME=/root rpm -ivh ~/rpmbuild/RPMS/noarch/dummy-mysql-devel-5.0.0-1.amzn2023.noarch.rpm
-        sudo env HOME=/root rpm -ivh ~/rpmbuild/RPMS/noarch/dummy-mariadb-devel-5.0.0-1.amzn2023.noarch.rpm
+        sudo env HOME=/root rpm -ivh /root/rpmbuild/RPMS/noarch/dummy-mysql-devel-5.0.0-1.amzn2023.noarch.rpm
+        sudo env HOME=/root rpm -ivh /root/rpmbuild/RPMS/noarch/dummy-mariadb-devel-5.0.0-1.amzn2023.noarch.rpm
     fi
     
     sudo env HOME=/root rpmbuild -ta slurm-${VER}.tar.bz2 --with mysql
