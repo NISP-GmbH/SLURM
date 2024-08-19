@@ -251,11 +251,11 @@ This is a dummy package to satisfy the mysql-devel dependency.
 * Wed Aug 16 2023 Your Name <your.email@example.com> - 5.0.0-1
 - Initial dummy package
 EOF
-        sudo mkdir -p /root/rpmbuild/RPMS/noarch/
+        sudo mkdir -p ~/rpmbuild/RPMS/noarch/
         sudo rpmbuild -bb dummy-mysql-devel.spec
         sudo rpmbuild -bb dummy-mariadb-devel.spec
-        sudo rpm -ivh /root/rpmbuild/RPMS/noarch/dummy-mysql-devel-5.0.0-1.amzn2023.noarch.rpm
-        sudo rpm -ivh /root/rpmbuild/RPMS/noarch/dummy-mariadb-devel-5.0.0-1.amzn2023.noarch.rpm
+        sudo rpm -ivh ~/rpmbuild/RPMS/noarch/dummy-mysql-devel-5.0.0-1.amzn2023.noarch.rpm
+        sudo rpm -ivh ~/rpmbuild/RPMS/noarch/dummy-mariadb-devel-5.0.0-1.amzn2023.noarch.rpm
     fi
     
     rpmbuild -ta slurm-${VER}.tar.bz2 --with mysql
