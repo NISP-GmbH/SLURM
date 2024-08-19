@@ -172,7 +172,7 @@ echo completed.
 exit 0
 EOF
 
-    chmod +x /usr/sbin/create-munge-key
+    sudo chmod +x /usr/sbin/create-munge-key
 }
 
 setupMungeForAmazon()
