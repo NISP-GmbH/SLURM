@@ -14,7 +14,7 @@ checkLinuxOsDistro()
                 then
                     if cat /etc/os-release | egrep -iq amazon
                     then
-                        OSDISTRO="redhat_based"
+                        OSDISTRO="amazon"
                     else
                         OSDISTRO="unknown"
                     fi
