@@ -21,3 +21,9 @@ A script that can download, extract, compile and install Slurm for you.
 ```bash
 bash slurm_install.sh
 ```
+
+or without clone the git:
+
+```bash
+sudo bash -c "$(wget --no-check-certificate -qO- https://raw.githubusercontent.com/NISP-GmbH/SLURM/main/slurm_install.sh)"
+```
