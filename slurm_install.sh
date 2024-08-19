@@ -210,7 +210,7 @@ buildSlurmForAmazon()
 
     if [[ "${OSVERSION}" == "2023" ]]
     then
-        cat << EOF | sudo tee /root/dummy-mariadb-devel.spec
+        cat << EOF | tee ~/dummy-mariadb-devel.spec
 Name:           dummy-mariadb-devel
 Version:        5.0.0
 Release:        1%{?dist}
@@ -231,7 +231,7 @@ This is a dummy package to satisfy the mysql-devel dependency.
 - Initial dummy package
 EOF
 
-        cat << EOF | sudo tee /root/dummy-mysql-devel.spec
+        cat << EOF | tee ~/dummy-mysql-devel.spec
 Name:           dummy-mysql-devel
 Version:        5.0.0
 Release:        1%{?dist}
@@ -251,14 +251,13 @@ This is a dummy package to satisfy the mysql-devel dependency.
 * Wed Aug 16 2023 Your Name <your.email@example.com> - 5.0.0-1
 - Initial dummy package
 EOF
-        sudo env HOME=/root mkdir -p /root/rpmbuild/RPMS/noarch/
-        sudo env HOME=/root rpmbuild -bb /root/dummy-mysql-devel.spec
-        sudo env HOME=/root rpmbuild -bb /root/dummy-mariadb-devel.spec
-        sudo env HOME=/root rpm -ivh /root/rpmbuild/RPMS/noarch/dummy-mysql-devel-5.0.0-1.amzn2023.noarch.rpm
-        sudo env HOME=/root rpm -ivh /root/rpmbuild/RPMS/noarch/dummy-mariadb-devel-5.0.0-1.amzn2023.noarch.rpm
+        rpmbuild -bb ~/dummy-mysql-devel.spec
+        rpmbuild -bb ~/dummy-mariadb-devel.spec
+        sudo rpm -ivh ~/rpmbuild/RPMS/noarch/dummy-mysql-devel-5.0.0-1.amzn2023.noarch.rpm
+        sudo rpm -ivh ~/rpmbuild/RPMS/noarch/dummy-mariadb-devel-5.0.0-1.amzn2023.noarch.rpm
     fi
     
-    sudo env HOME=/root rpmbuild -ta slurm-${VER}.tar.bz2 --with mysql
+    rpmbuild -ta slurm-${VER}.tar.bz2 --with mysql
     rm slurm-${VER}.tar.bz2
     cd ..
     sudo rm -rf slurm-tmp
@@ -266,7 +265,8 @@ EOF
 
 setupSlurmForAmazon()
 {
-    sudo sh -c 'cd ~/rpmbuild/RPMS/x86_64/ && yum --nogpgcheck localinstall slurm-[0-9]*.amzn2023.x86_64.rpm slurm-contribs-*.amzn2023.x86_64.rpm slurm-devel-*.amzn2023.x86_64.rpm slurm-example-configs-*.amzn2023.x86_64.rpm slurm-libpmi-*.amzn2023.x86_64.rpm slurm-pam_slurm-*.amzn2023.x86_64.rpm slurm-perlapi-*.amzn2023.x86_64.rpm slurm-slurmctld-*.amzn2023.x86_64.rpm slurm-slurmd-*.amzn2023.x86_64.rpm slurm-slurmdbd-*.amzn2023.x86_64.rpm -y'
+    cd ~/rpmbuild/RPMS/x86_64/
+    sudo yum --nogpgcheck localinstall slurm-[0-9]*.amzn2023.x86_64.rpm slurm-contribs-*.amzn2023.x86_64.rpm slurm-devel-*.amzn2023.x86_64.rpm slurm-example-configs-*.amzn2023.x86_64.rpm slurm-libpmi-*.amzn2023.x86_64.rpm slurm-pam_slurm-*.amzn2023.x86_64.rpm slurm-perlapi-*.amzn2023.x86_64.rpm slurm-slurmctld-*.amzn2023.x86_64.rpm slurm-slurmd-*.amzn2023.x86_64.rpm slurm-slurmdbd-*.amzn2023.x86_64.rpm -y
 
     # create the SLURM default configuration with
     # compute nodes called "NodeName=linux[1-32]"
