@@ -34,7 +34,7 @@ sudo bash -c "$(wget --no-check-certificate -qO- https://raw.githubusercontent.c
 bash slurm_install.sh --without-interaction=true --slurm-accounting-support=true --mysql-password=123456789
 ```
 
-Notes:
+**Notes:**
 * --mysql-password= and --slurm-accounting-support will not work if there is no --without-interaction parameter set to true
 * If you do not have mysql installed, the script will install for you; In that case, you can leave the mysql parameter empty, like this: --mysql-password=
 
