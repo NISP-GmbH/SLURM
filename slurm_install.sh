@@ -768,28 +768,28 @@ createMysqlDatabase()
 	StorageUser=$2
 	StoragePass=$3
 
-	root_password_check=true
-	while $root_password_check
-	do
-		echo "If you already have mysql/mariadb installed, please type the password. Leave empty (just press enter) if this server is fresh (without mysql/mariadb) or if there is no password or the password is configured under .my.cnf file."
-		read mysql_root_password
-		export MYSQL_PWD=$mysql_root_password
-		if sudo mysql -u root -e "SELECT 1" &> /dev/null
+    if echo $without_interaction | egrep -iq "false"
+    then
+        echo "If you already have mysql/mariadb installed, please type the password. Leave empty (just press enter) if this server is fresh (without mysql/mariadb) or if there is no password or the password is configured under .my.cnf file."
+        read mysql_root_password
+    fi
+
+    export MYSQL_PWD=$mysql_root_password
+	if sudo mysql -u root -e "SELECT 1" &> /dev/null
+	then
+        if ! sudo mysql -u root -e "use $StorageLoc" 2> /dev/null
 		then
-			if ! sudo mysql -u root -e "use $StorageLoc" 2> /dev/null
-			then
-				sudo mysql -u root -e "CREATE DATABASE $StorageLoc;"
-	    		sudo mysql -u root -e "CREATE USER '$StorageUser'@'localhost' IDENTIFIED BY '$StoragePass';"
-	    		sudo mysql -u root -e "ALTER USER '$StorageUser'@'localhost' IDENTIFIED BY '$StoragePass';"
-	    		sudo mysql -u root -e "GRANT ALL PRIVILEGES ON $StorageLoc.* TO '$StorageUser'@'localhost';"
-	    		sudo mysql -u root -e "FLUSH PRIVILEGES;"
-				root_password_check=false
-			fi
-		unset MYSQL_PWD
-		else
-			echo "Was not possible to connect with MySQL or MariaDB server. Please type the correct passord.."
+			sudo mysql -u root -e "CREATE DATABASE $StorageLoc;"
+	    	sudo mysql -u root -e "CREATE USER '$StorageUser'@'localhost' IDENTIFIED BY '$StoragePass';"
+	    	sudo mysql -u root -e "ALTER USER '$StorageUser'@'localhost' IDENTIFIED BY '$StoragePass';"
+	    	sudo mysql -u root -e "GRANT ALL PRIVILEGES ON $StorageLoc.* TO '$StorageUser'@'localhost';"
+	    	sudo mysql -u root -e "FLUSH PRIVILEGES;"
 		fi
-	done
+		unset MYSQL_PWD
+	else
+		echo "Was not possible to connect with MySQL or MariaDB server. Please type the correct passord. Exiting..."
+        exit 5
+	fi
 }
 
 
@@ -920,28 +920,32 @@ createRequiredUsers()
 
 askSlurmAccountingSupport()
 {
-    valid_answer=false
-    slurm_accounting_support=0
-    while ! $valid_answer
-    do
-        echo -e "${GREEN}##########################################################################"
-        echo "Do you want to enable Slurm accounting support? Possible answers: [yes/no]"
-        echo -e  "##########################################################################${NC}"
-        read answer
-        answer_lowercase=$(echo "$answer" | tr '[:upper:]' '[:lower:]')
+    if echo $without_interaction | egrep -iq "false"
+    then
+        valid_answer=false
+        slurm_accounting_support=0
+        while ! $valid_answer
+        do
+            echo -e "${GREEN}##########################################################################"
+            echo "Do you want to enable Slurm accounting support? Possible answers: [yes/no]"
+            echo -e  "##########################################################################${NC}"
+            read answer
 
-        if [ "$answer_lowercase" == "y" ] || [ "$answer_lowercase" == "yes" ]
-        then
-            slurm_accounting_support=1
-            valid_answer=true
-        elif [ "$answer_lowercase" == "n" ] || [ "$answer_lowercase" == "no" ]
-        then
-            slurm_accounting_support=0
-            valid_answer=true
-        else
-            echo "Invalid input!"
-        fi
-    done
+            answer_lowercase=$(echo "$answer" | tr '[:upper:]' '[:lower:]')
+
+            if [ "$answer_lowercase" == "y" ] || [ "$answer_lowercase" == "yes" ]
+            then
+                slurm_accounting_support=1
+                valid_answer=true
+            elif [ "$answer_lowercase" == "n" ] || [ "$answer_lowercase" == "no" ]
+            then
+                slurm_accounting_support=0
+                valid_answer=true
+            else
+                echo "Invalid input!"
+            fi
+        done
+    fi
 }
 main_ubuntu()
 {
@@ -1264,10 +1268,44 @@ setupRequiredUbuntuRepositories()
 }
 
 # global vars
-slurm_accounting_support=0
 OSVERSION=""
 OSDISTRO=""
 SUPPORTED_DISTROS="Centos, Rocky Linux and Almalinux: 7, 8 and 9; Ubuntu: 18.04, 20.04, 22.04 and 24.04; Amazon Linux: 2023."
+slurm_accounting_support=0
+without_interaction="false"
+mysql_root_password=""
+without_interaction_parameter="false"
+
+if echo $@ | egrep -iq -- "--without-interaction"
+then
+    without_interaction_parameter="true"
+
+    if [[ ${without_interaction_parameter} == "true" ]]
+    then
+        for arg in "$@"
+        do
+            case $arg in
+                --slurm-accounting-support=true)
+                slurm_accounting_support=1
+                shift
+                ;;
+                --without-interaction=true)
+                without_interaction=true
+                shift
+                ;;
+                --mysql-password=*)
+                mysql_root_password="${arg#*=}"
+                shift
+                ;;
+                *)
+                echo "Unknown parameter: $arg"
+                exit 1
+                ;;
+            esac
+        done
+    fi
+fi
+
 
 main()
 {
