@@ -920,9 +920,9 @@ createRequiredUsers()
 
 askSlurmAccountingSupport()
 {
-    valid_answer=true
+    valid_answer=false
     slurm_accounting_support=0
-    while $valid_answer
+    while ! $valid_answer
     do
         echo -e "${GREEN}##########################################################################"
         echo "Do you want to enable Slurm accounting support? Possible answers: [yes/no]"
@@ -933,11 +933,11 @@ askSlurmAccountingSupport()
         if [ "$answer_lowercase" == "y" ] || [ "$answer_lowercase" == "yes" ]
         then
             slurm_accounting_support=1
-            valid_answer=false
+            valid_answer=true
         elif [ "$answer_lowercase" == "n" ] || [ "$answer_lowercase" == "no" ]
         then
             slurm_accounting_support=0
-            valid_answer=false
+            valid_answer=true
         else
             echo "Invalid input!"
         fi
