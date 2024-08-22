@@ -59,6 +59,8 @@ i                    echo "Failed to setup mariadb-server. Exiting..."
                 fi
             fi
         fi
+    else
+        sudo yum -y install mariadb105-server mariadb105-devel
     fi
 }
 
