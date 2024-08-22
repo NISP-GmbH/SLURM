@@ -135,7 +135,7 @@ while getopts "hrf" options; do
   esac
 done
 
-if [ `id -u` != 0 ] ; then
+if [ \`id -u\` != 0 ] ; then
   echo "Please run create-munge-key as root."
   exit 1
 fi
