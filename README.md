@@ -37,3 +37,8 @@ bash slurm_install.sh --without-interaction=true --slurm-accounting-support=true
 Notes:
 * --mysql-password= and --slurm-accounting-support will not work if there is no --without-interaction parameter set to true
 * If you do not have mysql installed, the script will install for you; In that case, you can leave the mysql parameter empty, like this: --mysql-password=
+
+Example of slurm installer without mysql server previously installed:
+```bash
+bash slurm_install.sh --without-interaction=true --slurm-accounting-support=true --mysql-password=
+```
