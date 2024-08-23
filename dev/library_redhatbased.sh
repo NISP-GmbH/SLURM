@@ -203,11 +203,6 @@ buildSlurmForRedHatBased()
 	else
 	    rpmbuild -ta slurm-$VER.tar.bz2     # and wait a few minutes until SLURM has been compiled
 	fi
-	# if [ "$OSVERSION" == "7" ] ; then
-	# fi
-	# if [ "$OSVERSION" == "8" ] ; then
-	#     rpm-build -ta slurm-$VER.tar.bz2    # and wait a few minutes until SLURM has been compiled
-	# fi
 
 	rm slurm-$VER.tar.bz2
 	cd ..
