@@ -275,6 +275,8 @@ installMariaDBforRedHatBased()
             	sudo systemctl enable --now mariadb
         	fi
 		fi
+    else
+        sudo yum install MariaDB-devel dnf -y
 	fi
 }
 
