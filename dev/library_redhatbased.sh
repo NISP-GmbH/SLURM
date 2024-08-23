@@ -193,9 +193,9 @@ buildSlurmForRedHatBased()
 	if [ "$OSVERSION" == "9" ] ; then
 	    # fix LTO issue on 9
 	    # https://bugs.schedmd.com/show_bug.cgi?id=14565
-	    rpmbuild -ta slurm-$VER.tar.bz2 --define '_lto_cflags %{nil}' --with mysql     # and wait a few minutes until SLURM has been compiled
+	    rpmbuild -ta slurm-$VER.tar.bz2 --define '_lto_cflags %{nil}' --with mysql
 	else
-	    rpmbuild -ta slurm-$VER.tar.bz2     # and wait a few minutes until SLURM has been compiled
+	    rpmbuild -ta slurm-$VER.tar.bz2 --with mysql
 	fi
 
 	rm slurm-$VER.tar.bz2
@@ -270,7 +270,7 @@ installMariaDBforRedHatBased()
         	fi
 		fi
     else
-        sudo yum install MariaDB-devel dnf -y
+        sudo yum install MariaDB-server MariaDB-devel dnf -y
 	fi
 }
 
