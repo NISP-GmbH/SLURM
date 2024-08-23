@@ -184,14 +184,8 @@ buildSlurmForRedHatBased()
 	mkdir slurm-tmp
 	cd slurm-tmp
 	if [ "$VER" == "" ]; then
-	    export VER=20.02-latest    # latest 20.02.XX version
-	    export VER=20.11.3
-	    export VER=20.11-latest   # slurm-20.11-latest.tar.bz2
-	    export VER=20.11.9        # slurm-20.11-latest.tar.bz2
 	    export VER=22.05.9
-	    # export VER=23.02.2
 	fi
-	# https://download.schedmd.com/slurm/slurm-20.02.3.tar.bz2
 	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
 
 	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-$VER.tar.bz2 ... Exiting && exit
