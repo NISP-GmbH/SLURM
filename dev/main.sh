@@ -16,6 +16,10 @@ then
         for arg in "$@"
         do
             case $arg in
+                --slurm-accounting-support=false)
+                slurm_accounting_support=0
+                shift
+                ;;
                 --slurm-accounting-support=true)
                 slurm_accounting_support=1
                 shift
