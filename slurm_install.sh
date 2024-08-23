@@ -588,14 +588,8 @@ buildSlurmForRedHatBased()
 	mkdir slurm-tmp
 	cd slurm-tmp
 	if [ "$VER" == "" ]; then
-	    export VER=20.02-latest    # latest 20.02.XX version
-	    export VER=20.11.3
-	    export VER=20.11-latest   # slurm-20.11-latest.tar.bz2
-	    export VER=20.11.9        # slurm-20.11-latest.tar.bz2
 	    export VER=22.05.9
-	    # export VER=23.02.2
 	fi
-	# https://download.schedmd.com/slurm/slurm-20.02.3.tar.bz2
 	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
 
 	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-$VER.tar.bz2 ... Exiting && exit
@@ -603,15 +597,10 @@ buildSlurmForRedHatBased()
 	if [ "$OSVERSION" == "9" ] ; then
 	    # fix LTO issue on 9
 	    # https://bugs.schedmd.com/show_bug.cgi?id=14565
-	    rpmbuild -ta slurm-$VER.tar.bz2 --define '_lto_cflags %{nil}' --with mysql     # and wait a few minutes until SLURM has been compiled
+	    rpmbuild -ta slurm-$VER.tar.bz2 --define '_lto_cflags %{nil}' --with mysql
 	else
-	    rpmbuild -ta slurm-$VER.tar.bz2     # and wait a few minutes until SLURM has been compiled
+	    rpmbuild -ta slurm-$VER.tar.bz2 --with mysql
 	fi
-	# if [ "$OSVERSION" == "7" ] ; then
-	# fi
-	# if [ "$OSVERSION" == "8" ] ; then
-	#     rpm-build -ta slurm-$VER.tar.bz2    # and wait a few minutes until SLURM has been compiled
-	# fi
 
 	rm slurm-$VER.tar.bz2
 	cd ..
@@ -684,6 +673,8 @@ installMariaDBforRedHatBased()
             	sudo systemctl enable --now mariadb
         	fi
 		fi
+    else
+        sudo yum install MariaDB-server MariaDB-devel dnf -y
 	fi
 }
 
@@ -1183,12 +1174,7 @@ buildSlurmForUbuntu()
 
 	if [ "$VER" == "" ]
 	then
-	    export VER=20.02-latest    # latest 20.02.XX version
-	    export VER=20.11.3
-	    export VER=20.11-latest   # slurm-20.11-latest.tar.bz2
-	    export VER=20.11.9   # slurm-20.11-latest.tar.bz2
 	    export VER=22.05.9
-	    # export VER=23.02.2
 	fi
 	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
 
@@ -1238,6 +1224,8 @@ installMariaDBforUbuntu()
 	    	sudo DEBIAN_FRONTEND=noninteractive apt -y install mariadb-server libmariadbd-dev libmariadb3
 	    	sudo systemctl enable --now mariadb
 		fi
+    else
+	    sudo DEBIAN_FRONTEND=noninteractive apt -y install libmariadbd-dev libmariadb3
 	fi
 }
 
