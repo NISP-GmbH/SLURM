@@ -1224,8 +1224,6 @@ installMariaDBforUbuntu()
 	    	sudo DEBIAN_FRONTEND=noninteractive apt -y install mariadb-server libmariadbd-dev libmariadb3
 	    	sudo systemctl enable --now mariadb
 		fi
-    else
-	    sudo DEBIAN_FRONTEND=noninteractive apt -y install libmariadbd-dev libmariadb3
 	fi
 }
 
