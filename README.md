@@ -6,7 +6,7 @@ A script that downloads, extracts, compiles and installs Slurm for you - includi
 ## Supported OS
 
 - Ubuntu: 18.04, 20.04, 22.04, 24.04
-- Centos: 7, 8 and 9
+- RH/Centos: 7, 8 and 9
 - Rocky Linux: 7, 8 and 9
 - Alma Linux: 7, 8 and 9
 - Amazon Linux: 2023
