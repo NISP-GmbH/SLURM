@@ -1,23 +1,23 @@
 # Slurm installation script
 
-A script that downloads, extracts, compiles and installs Slurm for you.
+A script that downloads, extracts, compiles and installs Slurm for you - including accounting in case of interest.
 
 
 ## Supported OS
 
 - Ubuntu: 18.04, 20.04, 22.04, 24.04
-- Centos: 7, 8 and 9
+- RH/Centos: 7, 8 and 9
 - Rocky Linux: 7, 8 and 9
 - Alma Linux: 7, 8 and 9
 - Amazon Linux: 2023
 
-## Supported architecture 
+## Supported architectures
 - x86_64
 - arm64
 
 ## Features
 - Can be installed with and without accounting support
-- Can use an alredy installed MySQL/MariaDB server
+- Can use an already installed MySQL/MariaDB server
 - Can install MariaDB
 
 ## How to install with interaction
@@ -26,7 +26,7 @@ A script that downloads, extracts, compiles and installs Slurm for you.
 bash slurm_install.sh
 ```
 
-or without clone the git:
+or without cloning the git:
 
 ```bash
 sudo bash -c "$(wget --no-check-certificate -qO- https://raw.githubusercontent.com/NISP-GmbH/SLURM/main/slurm_install.sh)"
