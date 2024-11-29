@@ -1,6 +1,6 @@
 # Slurm installation script
 
-A script that downloads, extracts, compiles and installs Slurm for you.
+A script that downloads, extracts, compiles and installs Slurm for you - including accounting in case of interest.
 
 
 ## Supported OS
