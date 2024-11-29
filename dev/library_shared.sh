@@ -1,3 +1,20 @@
+getOsArchitecture() {
+    local arch=$(uname -m)
+
+    case "$arch" in
+        x86_64)
+            OSARCH="x86_64"
+            ;;
+        aarch64|arm64)
+            OSARCH="arm64"
+            ;;
+        *)
+            echo "Unknown architecture: $arch"
+            exit 55
+            ;;
+    esac
+}
+
 checkLinuxOsDistro()
 {
     if [ -f /etc/redhat-release ]

@@ -242,7 +242,13 @@ buildSlurmForUbuntu()
 
 	tar jxvf slurm-$VER.tar.bz2
 	cd  slurm-[0-9]*.[0-9]
-	./configure --prefix=/usr --sysconfdir=/etc/slurm --enable-pam --with-pam_dir=/lib/x86_64-linux-gnu/security/ --without-shared-libslurm
+    if echo $OSARCH | egrep -iq x86_64
+    then
+	    ./configure --prefix=/usr --sysconfdir=/etc/slurm --enable-pam --with-pam_dir=/lib/x86_64-linux-gnu/security/ --without-shared-libslurm
+    else
+        ./configure --prefix=/usr --sysconfdir=/etc/slurm --enable-pam --with-pam_dir=/usr/lib/aarch64-linux-gnu/security/ --without-shared-libslurm
+    fi
+
 	make
 	make contrib
 	sudo make install

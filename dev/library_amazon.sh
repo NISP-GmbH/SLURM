@@ -243,8 +243,17 @@ EOF
 
 setupSlurmForAmazon()
 {
-    cd ~/rpmbuild/RPMS/x86_64/
-    sudo yum --nogpgcheck localinstall slurm-[0-9]*.amzn2023.x86_64.rpm slurm-contribs-*.amzn2023.x86_64.rpm slurm-devel-*.amzn2023.x86_64.rpm slurm-example-configs-*.amzn2023.x86_64.rpm slurm-libpmi-*.amzn2023.x86_64.rpm slurm-pam_slurm-*.amzn2023.x86_64.rpm slurm-perlapi-*.amzn2023.x86_64.rpm slurm-slurmctld-*.amzn2023.x86_64.rpm slurm-slurmd-*.amzn2023.x86_64.rpm slurm-slurmdbd-*.amzn2023.x86_64.rpm -y
+    if echo $OSARCH | egrep -i "x86_64"
+    then
+        cd ~/rpmbuild/RPMS/x86_64/
+
+        # skipping slurm-openlava and slurm-torque because of missing perl-Switch
+        sudo yum --nogpgcheck localinstall slurm-[0-9]*.el*.x86_64.rpm slurm-contribs-*.el*.x86_64.rpm slurm-devel-*.el*.x86_64.rpm slurm-example-configs-*.el*.x86_64.rpm slurm-libpmi-*.el*.x86_64.rpm slurm-pam_slurm-*.el*.x86_64.rpm slurm-perlapi-*.el*.x86_64.rpm slurm-slurmctld-*.el*.x86_64.rpm slurm-slurmd-*.el*.x86_64.rpm slurm-slurmdbd-*.el*.x86_64.rpm -y
+    else
+        cd ~/rpmbuild/RPMS/aarch64/
+        sudo yum --nogpgcheck localinstall slurm-[0-9]*.el*.aarch64.rpm slurm-pam_slurm-[0-9]*.el*.aarch64.rpm slurm-contribs-[0-9]*.el*.aarch64.rpm slurm-perlapi-[0-9]*.el*.aarch64.rpm slurm-devel-[0-9]*-1.el*.aarch64.rpm slurm-slurmctld-[0-9]*.el*.aarch64.rpm slurm-example-configs-[0-9]*.el*.aarch64.rpm slurm-slurmd-[0-9]*.el*.aarch64.rpm slurm-libpmi-[0-9]*.el*.aarch64.rpm slurm-slurmdbd-[0-9]*.el*.aarch64.rpm slurm-openlava-[0-9]*.el*.aarch64.rpm slurm-torque-[0-9]*.el*.aarch64.rpm
+
+    fi
 
     # create the SLURM default configuration with
     # compute nodes called "NodeName=linux[1-32]"

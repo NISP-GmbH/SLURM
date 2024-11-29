@@ -1,6 +1,7 @@
 # global vars
 OSVERSION=""
 OSDISTRO=""
+OSARCH=""
 SUPPORTED_DISTROS="Centos, Rocky Linux and Almalinux: 7, 8 and 9; Ubuntu: 18.04, 20.04, 22.04 and 24.04; Amazon Linux: 2023."
 slurm_accounting_support=0
 without_interaction="false"
@@ -44,6 +45,7 @@ fi
 
 main()
 {
+    getOsArchitecture
 	checkLinuxOsDistro
 	askSlurmAccountingSupport
 	if echo $OSDISTRO | egrep -iq "redhat_based"
