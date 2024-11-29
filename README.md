@@ -17,7 +17,7 @@ A script that downloads, extracts, compiles and installs Slurm for you.
 
 ## Features
 - Can be installed with and without accounting support
-- Can use an alredy installed MySQL/MariaDB server
+- Can use an already installed MySQL/MariaDB server
 - Can install MariaDB
 
 ## How to install with interaction
