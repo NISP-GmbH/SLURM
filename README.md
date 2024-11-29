@@ -11,6 +11,10 @@ A script that downloads, extracts, compiles and installs Slurm for you.
 - Alma Linux: 7, 8 and 9
 - Amazon Linux: 2023
 
+## Supported architecture 
+- x86_64
+- arm64
+
 ## Features
 - Can be installed with and without accounting support
 - Can use an alredy installed MySQL/MariaDB server
