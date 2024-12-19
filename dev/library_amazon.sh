@@ -176,15 +176,15 @@ buildSlurmForAmazon()
         
     mkdir slurm-tmp
     cd slurm-tmp
-    if [ "${VER}" == "" ]
+
+    if [ "${SLURM_VERSION}" == "" ]
     then
-        export VER=24.05.2
+        export SLURM_VERSION=24.05.2
     fi
 
-    # https://download.schedmd.com/slurm/slurm-20.02.3.tar.bz2
-    wget --no-check-certificate https://download.schedmd.com/slurm/slurm-${VER}.tar.bz2
+    wget --no-check-certificate https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
 
-    [ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-${VER}.tar.bz2 ... Exiting && exit 1
+    [ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2 ... Exiting && exit 1
 
     if [[ "${OSVERSION}" == "2023" ]]
     then
@@ -235,8 +235,8 @@ EOF
         sudo rpm -ivh ~/rpmbuild/RPMS/noarch/dummy-mariadb-devel-5.0.0-1.amzn2023.noarch.rpm
     fi
     
-    rpmbuild -ta slurm-${VER}.tar.bz2 --with mysql
-    rm slurm-${VER}.tar.bz2
+    rpmbuild -ta slurm-${SLURM_VERSION}.tar.bz2 --with mysql
+    rm slurm-${SLURM_VERSION}.tar.bz2
     cd ..
     sudo rm -rf slurm-tmp
 }

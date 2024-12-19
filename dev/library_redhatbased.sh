@@ -190,22 +190,23 @@ buildSlurmForRedHatBased()
 
 	mkdir slurm-tmp
 	cd slurm-tmp
-	if [ "$VER" == "" ]; then
-	    export VER=22.05.9
-	fi
-	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
 
-	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-$VER.tar.bz2 ... Exiting && exit
+	if [ "$VER" == "" ]; then
+	    export SLURM_VERSION=22.05.9
+	fi
+	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
+
+	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2 ... Exiting && exit
 
 	if [ "$OSVERSION" == "9" ] ; then
 	    # fix LTO issue on 9
 	    # https://bugs.schedmd.com/show_bug.cgi?id=14565
-	    rpmbuild -ta slurm-$VER.tar.bz2 --define '_lto_cflags %{nil}' --with mysql
+	    rpmbuild -ta slurm-${SLURM_VERSION}.tar.bz2 --define '_lto_cflags %{nil}' --with mysql
 	else
-	    rpmbuild -ta slurm-$VER.tar.bz2 --with mysql
+	    rpmbuild -ta slurm-${SLURM_VERSION}.tar.bz2 --with mysql
 	fi
 
-	rm slurm-$VER.tar.bz2
+	rm slurm-${SLURM_VERSION}.tar.bz2
 	cd ..
 	rmdir slurm-tmp
 

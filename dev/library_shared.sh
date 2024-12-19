@@ -1,3 +1,16 @@
+welcomeMessage()
+{
+    RED='\033[0;31m'; GREEN='\033[0;32m'; GREY='\033[0;37m'; BLUE='\034[0;37m'; NC='\033[0m'
+    ORANGE='\033[0;33m'; BLUE='\033[0;34m'; WHITE='\033[0;97m'; UNLIN='\033[0;4m'
+    echo -e "${GREEN}###################################################"
+    echo -e "Welcome to the SLURM Installation Script"
+    echo -e "###################################################${NC}"
+    echo "You can customize the SLURM version executing the command below (before the builder script):"
+    echo "export SLURM_VERSION=24.05.2"
+    echo "Press enter to continue."
+    read p
+}
+
 getOsArchitecture() {
     local arch=$(uname -m)
 

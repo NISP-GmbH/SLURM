@@ -232,15 +232,15 @@ buildSlurmForUbuntu()
     mkdir slurm-tmp
     cd slurm-tmp
 
-	if [ "$VER" == "" ]
+	if [ "$SLURM_VERSION" == "" ]
 	then
-	    export VER=22.05.9
+	    export SLURM_VERSION=22.05.9
 	fi
-	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
+	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
 
-	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-$VER.tar.bz2 ... Exiting && exit
+	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2 ... Exiting && exit
 
-	tar jxvf slurm-$VER.tar.bz2
+	tar jxvf slurm-${SLURM_VERSION}.tar.bz2
 	cd  slurm-[0-9]*.[0-9]
     if echo $OSARCH | egrep -iq x86_64
     then
