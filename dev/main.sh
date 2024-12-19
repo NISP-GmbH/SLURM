@@ -45,6 +45,7 @@ fi
 
 main()
 {
+    welcomeMessage
     getOsArchitecture
 	checkLinuxOsDistro
 	askSlurmAccountingSupport

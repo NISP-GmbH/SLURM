@@ -15,13 +15,6 @@
 ################################################################################
 # Version v1.7 including accounting support
 
-RED='\033[0;31m'; GREEN='\033[0;32m'; GREY='\033[0;37m'; BLUE='\034[0;37m'; NC='\033[0m'
-ORANGE='\033[0;33m'; BLUE='\033[0;34m'; WHITE='\033[0;97m'; UNLIN='\033[0;4m'
-echo -e "${GREEN}###################################################"
-echo -e "Welcome to the SLURM Installation Script"
-echo -e "###################################################${NC}"
-sleep 1.2
-
 main_amazon()
 {
     disableSElinux
@@ -200,15 +193,15 @@ buildSlurmForAmazon()
         
     mkdir slurm-tmp
     cd slurm-tmp
-    if [ "${VER}" == "" ]
+
+    if [ "${SLURM_VERSION}" == "" ]
     then
-        export VER=24.05.2
+        export SLURM_VERSION=24.05.2
     fi
 
-    # https://download.schedmd.com/slurm/slurm-20.02.3.tar.bz2
-    wget --no-check-certificate https://download.schedmd.com/slurm/slurm-${VER}.tar.bz2
+    wget --no-check-certificate https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
 
-    [ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-${VER}.tar.bz2 ... Exiting && exit 1
+    [ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2 ... Exiting && exit 1
 
     if [[ "${OSVERSION}" == "2023" ]]
     then
@@ -259,8 +252,8 @@ EOF
         sudo rpm -ivh ~/rpmbuild/RPMS/noarch/dummy-mariadb-devel-5.0.0-1.amzn2023.noarch.rpm
     fi
     
-    rpmbuild -ta slurm-${VER}.tar.bz2 --with mysql
-    rm slurm-${VER}.tar.bz2
+    rpmbuild -ta slurm-${SLURM_VERSION}.tar.bz2 --with mysql
+    rm slurm-${SLURM_VERSION}.tar.bz2
     cd ..
     sudo rm -rf slurm-tmp
 }
@@ -603,22 +596,23 @@ buildSlurmForRedHatBased()
 
 	mkdir slurm-tmp
 	cd slurm-tmp
-	if [ "$VER" == "" ]; then
-	    export VER=22.05.9
-	fi
-	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
 
-	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-$VER.tar.bz2 ... Exiting && exit
+	if [ "$VER" == "" ]; then
+	    export SLURM_VERSION=22.05.9
+	fi
+	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
+
+	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2 ... Exiting && exit
 
 	if [ "$OSVERSION" == "9" ] ; then
 	    # fix LTO issue on 9
 	    # https://bugs.schedmd.com/show_bug.cgi?id=14565
-	    rpmbuild -ta slurm-$VER.tar.bz2 --define '_lto_cflags %{nil}' --with mysql
+	    rpmbuild -ta slurm-${SLURM_VERSION}.tar.bz2 --define '_lto_cflags %{nil}' --with mysql
 	else
-	    rpmbuild -ta slurm-$VER.tar.bz2 --with mysql
+	    rpmbuild -ta slurm-${SLURM_VERSION}.tar.bz2 --with mysql
 	fi
 
-	rm slurm-$VER.tar.bz2
+	rm slurm-${SLURM_VERSION}.tar.bz2
 	cd ..
 	rmdir slurm-tmp
 
@@ -733,6 +727,19 @@ setupRequiredRedHatBasedRepositories()
 	    # sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 	fi
 }
+welcomeMessage()
+{
+    RED='\033[0;31m'; GREEN='\033[0;32m'; GREY='\033[0;37m'; BLUE='\034[0;37m'; NC='\033[0m'
+    ORANGE='\033[0;33m'; BLUE='\033[0;34m'; WHITE='\033[0;97m'; UNLIN='\033[0;4m'
+    echo -e "${GREEN}###################################################"
+    echo -e "Welcome to the SLURM Installation Script"
+    echo -e "###################################################${NC}"
+    echo "You can customize the SLURM version executing the command below (before the builder script):"
+    echo "export SLURM_VERSION=24.05.2"
+    echo "Press enter to continue."
+    read p
+}
+
 getOsArchitecture() {
     local arch=$(uname -m)
 
@@ -1205,15 +1212,15 @@ buildSlurmForUbuntu()
     mkdir slurm-tmp
     cd slurm-tmp
 
-	if [ "$VER" == "" ]
+	if [ "$SLURM_VERSION" == "" ]
 	then
-	    export VER=22.05.9
+	    export SLURM_VERSION=22.05.9
 	fi
-	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-$VER.tar.bz2
+	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
 
-	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-$VER.tar.bz2 ... Exiting && exit
+	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2 ... Exiting && exit
 
-	tar jxvf slurm-$VER.tar.bz2
+	tar jxvf slurm-${SLURM_VERSION}.tar.bz2
 	cd  slurm-[0-9]*.[0-9]
     if echo $OSARCH | egrep -iq x86_64
     then
@@ -1339,6 +1346,7 @@ fi
 
 main()
 {
+    welcomeMessage
     getOsArchitecture
 	checkLinuxOsDistro
 	askSlurmAccountingSupport
