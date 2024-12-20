@@ -176,16 +176,24 @@ buildSlurmForRedHatBased()
 	if [ "$OSVERSION" == "8" ]
 	then
 	    sudo yum install rpm-build make -y
-	    # dnf --enablerepo=PowerTools install rrdtool-devel lua-devel hwloc-devel -y
-	    sudo dnf --enablerepo=powertools install rrdtool-devel lua-devel hwloc-devel rpm-build -y
-	    # dnf group install "Development Tools"
+        if $ISOSREDHAT
+        then
+            sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
+            sudo dnf install rrdtool-devel lua-devel hwloc-devel rpm-build -y
+        else
+	        sudo dnf --enablerepo=powertools install rrdtool-devel lua-devel hwloc-devel rpm-build -y
+        fi
 	fi
 	if [ "$OSVERSION" == "9" ]
 	then
     	sudo yum install rpm-build make -y
-    	# dnf --enablerepo=PowerTools install rrdtool-devel lua-devel hwloc-devel -y
-    	sudo dnf --enablerepo=crb install rrdtool-devel lua-devel hwloc-devel -y
-    	# dnf group install "Development Tools"
+        if $ISOSREDHAT
+        then
+            sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
+            sudo dnf install rrdtool-devel lua-devel hwloc-devel rpm-build -y
+        else
+    	    sudo dnf --enablerepo=crb install rrdtool-devel lua-devel hwloc-devel -y
+        fi
 	fi
 
 	mkdir slurm-tmp

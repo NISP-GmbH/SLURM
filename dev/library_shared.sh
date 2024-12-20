@@ -33,6 +33,10 @@ checkLinuxOsDistro()
     if [ -f /etc/redhat-release ]
     then
         OSDISTRO="redhat_based"
+        if hostnamectl | egrep -i "operating system" | egrep -iq "red hat enterprise"
+        then
+            ISOSREDHAT="true"
+        fi
     else
         if [ -f /etc/issue ]
         then

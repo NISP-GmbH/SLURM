@@ -582,16 +582,24 @@ buildSlurmForRedHatBased()
 	if [ "$OSVERSION" == "8" ]
 	then
 	    sudo yum install rpm-build make -y
-	    # dnf --enablerepo=PowerTools install rrdtool-devel lua-devel hwloc-devel -y
-	    sudo dnf --enablerepo=powertools install rrdtool-devel lua-devel hwloc-devel rpm-build -y
-	    # dnf group install "Development Tools"
+        if $ISOSREDHAT
+        then
+            sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
+            sudo dnf install rrdtool-devel lua-devel hwloc-devel rpm-build -y
+        else
+	        sudo dnf --enablerepo=powertools install rrdtool-devel lua-devel hwloc-devel rpm-build -y
+        fi
 	fi
 	if [ "$OSVERSION" == "9" ]
 	then
     	sudo yum install rpm-build make -y
-    	# dnf --enablerepo=PowerTools install rrdtool-devel lua-devel hwloc-devel -y
-    	sudo dnf --enablerepo=crb install rrdtool-devel lua-devel hwloc-devel -y
-    	# dnf group install "Development Tools"
+        if $ISOSREDHAT
+        then
+            sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
+            sudo dnf install rrdtool-devel lua-devel hwloc-devel rpm-build -y
+        else
+    	    sudo dnf --enablerepo=crb install rrdtool-devel lua-devel hwloc-devel -y
+        fi
 	fi
 
 	mkdir slurm-tmp
@@ -762,6 +770,10 @@ checkLinuxOsDistro()
     if [ -f /etc/redhat-release ]
     then
         OSDISTRO="redhat_based"
+        if hostnamectl | egrep -i "operating system" | egrep -iq "red hat enterprise"
+        then
+            ISOSREDHAT="true"
+        fi
     else
         if [ -f /etc/issue ]
         then
@@ -1303,6 +1315,7 @@ setupRequiredUbuntuRepositories()
 OSVERSION=""
 OSDISTRO=""
 OSARCH=""
+ISOSREDHAT="false"
 SUPPORTED_DISTROS="Centos, Rocky Linux and Almalinux: 7, 8 and 9; Ubuntu: 18.04, 20.04, 22.04 and 24.04; Amazon Linux: 2023."
 slurm_accounting_support=0
 without_interaction="false"
