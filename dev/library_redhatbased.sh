@@ -256,16 +256,30 @@ EOF
 
 installMungeForRedHatBased()
 {
-	if [ "$OSVERSION" == "7" ] ; then
+	if [ "$OSVERSION" == "7" ]
+    then
 	    sudo yum install munge munge-libs munge-devel -y
 	fi
-	if [ "$OSVERSION" == "8" ] ; then
-	    sudo yum install munge munge-libs  -y
-	    sudo dnf --enablerepo=powertools install munge-devel -y
+	if [ "$OSVERSION" == "8" ]
+    then
+        if $ISOSREDHAT
+        then
+            sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
+	        sudo yum install munge munge-libs munge-devel -y
+        else
+	        sudo dnf --enablerepo=powertools install munge munge-libs munge-devel -y
+        fi 
+
 	fi
-	if [ "$OSVERSION" == "9" ] ; then
-	    sudo yum install munge munge-libs  -y
-	    sudo dnf --enablerepo=crb install munge-devel -y
+	if [ "$OSVERSION" == "9" ]
+    then
+        if $ISOSREDHAT
+        then
+            sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
+            sudo dnf install munge-devel munge munge-libs -y
+        else
+            sudo dnf --enablerepo=crb install munge munge-libs munge-devel -y
+        fi 
 	fi
 }
 
