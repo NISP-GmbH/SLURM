@@ -610,7 +610,7 @@ buildSlurmForRedHatBased()
 	mkdir -p slurm-tmp
 	cd slurm-tmp
 
-	if [ "$VER" == "" ]; then
+	if [ "$SLURM_VERSION" == "" ]; then
 	    export SLURM_VERSION=22.05.9
 	fi
 	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
