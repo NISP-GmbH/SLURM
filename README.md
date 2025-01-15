@@ -19,6 +19,16 @@ A script that downloads, extracts, compiles and installs Slurm for you - includi
 - Can be installed with and without accounting support
 - Can use an already installed MySQL/MariaDB server
 - Can install MariaDB
+- Change the SLURM version via environment variable
+
+## How to customize the SLURM version
+
+Before execute the script, please export the variable SLURM_VERSION with the desired version.
+For example:
+
+```bash
+export SLURM_VERSION=24.05.2
+```
 
 ## How to install with interaction
 
