@@ -537,8 +537,26 @@ StoragePass=$StoragePass
 StoragePort=$StoragePort
 LogFile=/var/log/slurmdbd.log
 EOF
-fi
+    fi
 
+    if [ "$OSVERSION" == "9" ]
+    then
+        cat << EOF | sudo tee /etc/slurm/cgroup.conf
+###
+#
+# Slurm cgroup support configuration file
+#
+# See man slurm.conf and man cgroup.conf for further
+# information on cgroup configuration parameters
+#--
+CgroupPlugin=cgroup/v2
+# CgroupAutomount=yes
+
+ConstrainCores=no
+ConstrainRAMSpace=no
+EOF
+
+    else
 		cat << EOF | sudo tee /etc/slurm/cgroup.conf
 ###
 #
@@ -553,6 +571,7 @@ CgroupPlugin=cgroup/v1
 ConstrainCores=no
 ConstrainRAMSpace=no
 EOF
+    fi
 
 		if [ ! -f /etc/my.cnf.d/slurm.cnf  ]
         then
@@ -592,7 +611,7 @@ buildSlurmForRedHatBased()
 	fi
 	if [ "$OSVERSION" == "9" ]
 	then
-    	sudo yum install rpm-build make -y
+    	sudo yum install rpm-build make autoconf automake dbus-devel -y
         if $ISOSREDHAT
         then
             sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
@@ -1195,6 +1214,25 @@ EOF
 		fi
 		sudo sed -i 's/AccountingStorageType=accounting_storage\/none/AccountingStorageType=accounting_storage\/slurmdbd/' /etc/slurm/slurm.conf
 	fi
+
+    if [[ $(echo "$VERSION_ID >= 22.04" | bc -l) -eq 1 ]]
+    then
+        cat << EOF | sudo tee /etc/slurm/cgroup.conf
+###
+#   
+# Slurm cgroup support configuration file
+#
+# See man slurm.conf and man cgroup.conf for further
+# information on cgroup configuration parameters
+#--
+CgroupPlugin=cgroup/v2
+# CgroupAutomount=yes
+
+ConstrainCores=no
+ConstrainRAMSpace=no
+EOF
+
+else
 		cat << EOF | sudo tee /etc/slurm/cgroup.conf
 ###
 #
@@ -1209,7 +1247,7 @@ CgroupPlugin=cgroup/v1
 ConstrainCores=no
 ConstrainRAMSpace=no
 EOF
-
+fi
 		if [ ! -f /etc/mysql/mariadb.conf.d/99-slurm.cnf  ]
 		then
 			total_memory=$(free -m | awk '/^Mem:/{print $2}')
@@ -1233,7 +1271,7 @@ buildSlurmForUbuntu()
 	sudo DEBIAN_FRONTEND=noninteractive apt -y upgrade
 	. /etc/os-release
 
-	sudo DEBIAN_FRONTEND=noninteractive apt -y install bzip2 python3 gcc openssl numactl hwloc lua5.3 man2html make ruby ruby-dev libmunge-dev libpam0g-dev
+	sudo DEBIAN_FRONTEND=noninteractive apt -y install bzip2 python3 gcc openssl numactl hwloc lua5.3 man2html make ruby ruby-dev libmunge-dev libpam0g-dev libdbus-1-dev
 	sudo /usr/bin/gem install fpm
     mkdir slurm-tmp
     cd slurm-tmp
