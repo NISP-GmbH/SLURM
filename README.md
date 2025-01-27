@@ -20,6 +20,7 @@ A script that downloads, extracts, compiles and installs Slurm for you - includi
 - Can use an already installed MySQL/MariaDB server
 - Can install MariaDB
 - Change the SLURM version via environment variable
+- Support for cgroups/v2 to Ubuntu 22.04+ and Red Hat 9 based distributions
 
 ## How to customize the SLURM version
 
