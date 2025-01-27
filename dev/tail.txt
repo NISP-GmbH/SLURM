@@ -1,2 +1,0 @@
-# unknown error
-exit 255
