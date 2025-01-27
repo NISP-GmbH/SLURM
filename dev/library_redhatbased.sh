@@ -131,8 +131,26 @@ StoragePass=$StoragePass
 StoragePort=$StoragePort
 LogFile=/var/log/slurmdbd.log
 EOF
-fi
+    fi
 
+    if [ "$OSVERSION" == "9" ]
+    then
+        cat << EOF | sudo tee /etc/slurm/cgroup.conf
+###
+#
+# Slurm cgroup support configuration file
+#
+# See man slurm.conf and man cgroup.conf for further
+# information on cgroup configuration parameters
+#--
+CgroupPlugin=cgroup/v2
+# CgroupAutomount=yes
+
+ConstrainCores=no
+ConstrainRAMSpace=no
+EOF
+
+    else
 		cat << EOF | sudo tee /etc/slurm/cgroup.conf
 ###
 #
@@ -147,6 +165,7 @@ CgroupPlugin=cgroup/v1
 ConstrainCores=no
 ConstrainRAMSpace=no
 EOF
+    fi
 
 		if [ ! -f /etc/my.cnf.d/slurm.cnf  ]
         then
@@ -186,7 +205,7 @@ buildSlurmForRedHatBased()
 	fi
 	if [ "$OSVERSION" == "9" ]
 	then
-    	sudo yum install rpm-build make autoconf automake -y
+    	sudo yum install rpm-build make autoconf automake dbus-devel -y
         if $ISOSREDHAT
         then
             sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
