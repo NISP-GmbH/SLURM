@@ -180,11 +180,6 @@ setupMungeForAmazon()
     sudo systemctl start munge
 }
 
-checkCgroupV2()
-{
-    [[ $(stat --file-system --format=%t /sys/fs/cgroup) = "63677270" ]]
-}
-
 buildSlurmForAmazon()
 {
     # build and install SLURM
@@ -597,7 +592,7 @@ buildSlurmForRedHatBased()
 	fi
 	if [ "$OSVERSION" == "9" ]
 	then
-    	sudo yum install rpm-build make autoconf automake -y
+    	sudo yum install rpm-build make -y
         if $ISOSREDHAT
         then
             sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
@@ -940,7 +935,9 @@ enableSystemdServices()
 
 createRequiredFiles()
 {
-	sudo mkdir -p /var/spool/slurm /var/spool/slurm/slurmctld /var/spool/slurm/cluster_state
+	sudo mkdir /var/spool/slurm
+	sudo mkdir /var/spool/slurm/slurmctld
+	sudo mkdir /var/spool/slurm/cluster_state
 	sudo touch /var/log/slurmctld.log
 	sudo touch /var/log/slurm_jobacct.log /var/log/slurm_jobcomp.log
 }
@@ -1094,7 +1091,7 @@ setupSlurmForUbuntu()
 	# Feel free to adapt to your needs
 	HOST=`hostname`
 
-	sudo mkdir -p /etc/slurm/
+	sudo mkdir /etc/slurm/
     if [[ $(echo "$VERSION_ID >= 22.04" | bc -l) -eq 1 ]]
     then
 		ProctrackType="linuxproc"
@@ -1238,7 +1235,7 @@ buildSlurmForUbuntu()
 
 	sudo DEBIAN_FRONTEND=noninteractive apt -y install bzip2 python3 gcc openssl numactl hwloc lua5.3 man2html make ruby ruby-dev libmunge-dev libpam0g-dev
 	sudo /usr/bin/gem install fpm
-    mkdir -p slurm-tmp
+    mkdir slurm-tmp
     cd slurm-tmp
 
 	if [ "$SLURM_VERSION" == "" ]
@@ -1380,10 +1377,6 @@ main()
     getOsArchitecture
 	checkLinuxOsDistro
 	askSlurmAccountingSupport
-	if checkCgroupV2; then
-		echo "Detected OS cgroup/v2 support enabled, but the installation script only supported cgroup/v1 ..."
-		exit 2
-	fi
 	if echo $OSDISTRO | egrep -iq "redhat_based"
 	then
 		main_redhat
