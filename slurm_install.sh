@@ -600,7 +600,7 @@ buildSlurmForRedHatBased()
 	fi
 	if [ "$OSVERSION" == "8" ]
 	then
-	    sudo yum install rpm-build make -y
+	    sudo yum install rpm-build make autoconf automake dbus-devel -y
         if $ISOSREDHAT
         then
             sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
