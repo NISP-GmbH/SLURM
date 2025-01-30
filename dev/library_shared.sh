@@ -8,7 +8,10 @@ welcomeMessage()
     echo "You can customize the SLURM version executing the command below (before the builder script):"
     echo "export SLURM_VERSION=24.05.2"
     echo "Press enter to continue."
-    read p
+    if ! $without_interaction
+    then
+        read p
+    fi
 }
 
 getOsArchitecture() {
@@ -77,7 +80,12 @@ createMysqlDatabase()
     if echo $without_interaction | egrep -iq "false"
     then
         echo "If you already have mysql/mariadb installed, please type the password. Leave empty (just press enter) if this server is fresh (without mysql/mariadb) or if there is no password or the password is configured under .my.cnf file."
-        read mysql_root_password
+        if $without_interaction
+        then
+            mysql_root_password=""
+        else
+            read mysql_root_password
+        fi
     fi
 
     export MYSQL_PWD=$mysql_root_password
