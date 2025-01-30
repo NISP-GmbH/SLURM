@@ -879,6 +879,11 @@ createMysqlDatabase()
 
 executeFirstSlurmCommands()
 {
+    if $without_interaction_parameter
+    then
+        return
+    fi
+
 	echo Sleep for a few seconds for slurmctld to come up ...
 	sleep 5
 
