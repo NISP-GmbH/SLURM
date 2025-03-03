@@ -59,6 +59,9 @@ main()
     elif echo $OSDISTRO | egrep -iq "amazon"
     then
         main_amazon
+    elif echo $OSDISTRO | egrep -iq "sles"
+    then
+        main_sles
 	else
 		echo "Unknown Linux OS Distro. The supported distros are: $SUPPORTED_DISTROS"
 		echo "Aborting..."

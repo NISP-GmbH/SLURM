@@ -52,6 +52,9 @@ checkLinuxOsDistro()
                     if cat /etc/os-release | egrep -iq amazon
                     then
                         OSDISTRO="amazon"
+                    elif cat /etc/os-release | egrep -i "^NAME=" | egrep -iq "(SUSE|SLES)"
+                    then
+                        OSDISTRO="SLES"
                     else
                         OSDISTRO="unknown"
                     fi
