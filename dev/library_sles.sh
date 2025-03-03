@@ -225,8 +225,8 @@ buildSlurmForSles()
     sudo zypper install -y bzip2 python3 gcc openssl libnuma1 hwloc lua53 make ruby ruby-devel pam-devel dbus-1-devel munge-devel libmunge2
     sudo gem install dotenv -v 2.8.1
     sudo gem install rchardet -v 1.8.0
-    sudo gem install fpm -v 1.14.2
     sudo gem install public_suffix -v 4.0.7
+    sudo gem install fpm -v 1.14.2
 
     mkdir slurm-tmp
     cd slurm-tmp
