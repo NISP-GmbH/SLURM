@@ -10,6 +10,7 @@ A script that downloads, extracts, compiles and installs Slurm for you - includi
 - Rocky Linux: 7, 8 and 9
 - Alma Linux: 7, 8 and 9
 - Amazon Linux: 2023
+- SLES / OpenSUSE: 15
 
 ## Supported architectures
 - x86_64
