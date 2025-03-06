@@ -1225,6 +1225,12 @@ EOF
 		sudo sed -i 's/AccountingStorageType=accounting_storage\/none/AccountingStorageType=accounting_storage\/slurmdbd/' /etc/slurm/slurm.conf
 	fi
 
+    if [ -f /sys/fs/cgroup/cgroup.controllers ]
+    then
+        CGROUP_VERSION=v2
+    else
+        CGROUP_VERSION=v1
+    fi
     cat << EOF | sudo tee /etc/slurm/cgroup.conf
 ###
 #   
@@ -1233,7 +1239,7 @@ EOF
 # See man slurm.conf and man cgroup.conf for further
 # information on cgroup configuration parameters
 #--
-CgroupPlugin=cgroup/v2
+CgroupPlugin=cgroup/${CGROUP_VERSION}
 # CgroupAutomount=yes
 
 ConstrainCores=no
@@ -1263,7 +1269,7 @@ buildSlurmForSles()
     sudo zypper --non-interactive update
 	. /etc/os-release
 
-    sudo zypper install -y bzip2 python3 gcc openssl libnuma1 hwloc lua53 make ruby ruby-devel pam-devel dbus-1-devel munge-devel libmunge2
+    sudo zypper install -y bzip2 python3 gcc openssl libnuma1 hwloc lua53 make ruby ruby-devel pam-devel dbus-1-devel munge-devel libmunge2 jq libcgroup-devel libcgroup1 libcgroup-tools
     sudo gem install dotenv -v 2.8.1
     sudo gem install rchardet -v 1.8.0
     sudo gem install public_suffix -v 4.0.7
