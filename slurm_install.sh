@@ -49,7 +49,7 @@ checkAmazonVersion()
 {
     OSVERSION=$(grep -E '^VERSION_ID=' /etc/os-release | cut -d'"' -f2)
 
-    if ! echo $OSVERSION | egrep -iq "^2023$"
+    if ! echo $OSVERSION | grep -Eiq "^2023$"
     then
         echo "Amazon Linux Version >>> $OSVERSION <<< is not supported! Exiting..."
         echo "Supported distros: ${SUPPORTED_DISTROS}"
@@ -61,7 +61,7 @@ installMariaDBforAmazon()
 {
     if [ "$slurm_accounting_support" == "1" ]
     then
-        if ! sudo rpm -qa | egrep -iq "mariadb105-server "
+        if ! sudo rpm -qa | grep -Eiq "mariadb105-server "
         then
             # SLURM accounting support
             if [ "$OSVERSION" == "2023" ]
@@ -260,7 +260,7 @@ EOF
 
 setupSlurmForAmazon()
 {
-    if echo $OSARCH | egrep -i "x86_64"
+    if echo $OSARCH | grep -Ei "x86_64"
     then
         cd ~/rpmbuild/RPMS/x86_64/
 
@@ -425,7 +425,7 @@ main_redhat()
 
 setupSlurmForRedHatBased()
 {
-    if echo $OSARCH | egrep -i "x86_64"
+    if echo $OSARCH | grep -Ei "x86_64"
     then
     	cd ~/rpmbuild/RPMS/x86_64/
 
@@ -712,7 +712,7 @@ installMariaDBforRedHatBased()
 {
 	if [ "$slurm_accounting_support" == "1" ]
 	then
-		if ! rpm -qa | egrep -iq mariadb-server
+		if ! rpm -qa | grep -Eiq mariadb-server
 		then
         	# SLURM accounting support
         	if [ "$OSVERSION" == "9" ]
@@ -806,23 +806,23 @@ checkLinuxOsDistro()
     if [ -f /etc/redhat-release ]
     then
         OSDISTRO="redhat_based"
-        if hostnamectl | egrep -i "operating system" | egrep -iq "red hat enterprise"
+        if hostnamectl | grep -Ei "operating system" | grep -Eiq "red hat enterprise"
         then
             ISOSREDHAT="true"
         fi
     else
         if [ -f /etc/issue ]
         then
-            if cat /etc/issue | egrep -iq "ubuntu"
+            if cat /etc/issue | grep -Eiq "ubuntu"
             then
                 OSDISTRO="ubuntu"
             else
                 if [ -f /etc/os-release ]
                 then
-                    if cat /etc/os-release | egrep -iq amazon
+                    if cat /etc/os-release | grep -Eiq amazon
                     then
                         OSDISTRO="amazon"
-                    elif cat /etc/os-release | egrep -i "^NAME=" | egrep -iq "(SUSE|SLES)"
+                    elif cat /etc/os-release | grep -Ei "^NAME=" | grep -Eiq "(SUSE|SLES)"
                     then
                         OSDISTRO="SLES"
                     else
@@ -850,7 +850,7 @@ createMysqlDatabase()
 	StorageUser=$2
 	StoragePass=$3
 
-    if echo $without_interaction | egrep -iq "false"
+    if echo $without_interaction | grep -Eiq "false"
     then
         echo "If you already have mysql/mariadb installed, please type the password. Leave empty (just press enter) if this server is fresh (without mysql/mariadb) or if there is no password or the password is configured under .my.cnf file."
         if $without_interaction
@@ -1012,7 +1012,7 @@ createRequiredUsers()
 
 askSlurmAccountingSupport()
 {
-    if echo $without_interaction | egrep -iq "false"
+    if echo $without_interaction | grep -Eiq "false"
     then
         valid_answer=false
         slurm_accounting_support=0
@@ -1288,7 +1288,7 @@ buildSlurmForSles()
 
 	tar jxvf slurm-${SLURM_VERSION}.tar.bz2
 	cd  slurm-[0-9]*.[0-9]
-    if echo $OSARCH | egrep -iq x86_64
+    if echo $OSARCH | grep -Eiq x86_64
     then
 	    ./configure --prefix=/usr --sysconfdir=/etc/slurm --enable-pam --with-pam_dir=/lib64/security --without-shared-libslurm
     else
@@ -1326,7 +1326,7 @@ installMariaDBforSles()
 {
 	if [ "$slurm_accounting_support" == "1" ]
 	then
-		if ! rpm -qa | egrep -iq "^.*mariadb-server"
+		if ! rpm -qa | grep -Eiq "^.*mariadb-server"
 		then
             sudo zypper install -y mariadb-server libmariadbd-devel libmariadb-devel
 	    	sudo systemctl enable --now mariadb
@@ -1604,7 +1604,7 @@ buildSlurmForUbuntu()
 
 	tar jxvf slurm-${SLURM_VERSION}.tar.bz2
 	cd  slurm-[0-9]*.[0-9]
-    if echo $OSARCH | egrep -iq x86_64
+    if echo $OSARCH | grep -Eiq x86_64
     then
 	    ./configure --prefix=/usr --sysconfdir=/etc/slurm --enable-pam --with-pam_dir=/lib/x86_64-linux-gnu/security/ --without-shared-libslurm
     else
@@ -1647,7 +1647,7 @@ installMariaDBforUbuntu()
 {
 	if [ "$slurm_accounting_support" == "1" ]
 	then
-		if ! dpkg -l | egrep -iq "^.*mariadb-server"
+		if ! dpkg -l | grep -Eiq "^.*mariadb-server"
 		then
 	    	sudo DEBIAN_FRONTEND=noninteractive apt -y install mariadb-server libmariadbd-dev libmariadb3
 	    	sudo systemctl enable --now mariadb
@@ -1692,7 +1692,7 @@ without_interaction="false"
 mysql_root_password=""
 without_interaction_parameter="false"
 
-if echo $@ | egrep -iq -- "--without-interaction"
+if echo $@ | grep -Eiq -- "--without-interaction"
 then
     without_interaction_parameter="true"
 
@@ -1733,16 +1733,16 @@ main()
     getOsArchitecture
 	checkLinuxOsDistro
 	askSlurmAccountingSupport
-	if echo $OSDISTRO | egrep -iq "redhat_based"
+	if echo $OSDISTRO | grep -Eiq "redhat_based"
 	then
 		main_redhat
-	elif echo $OSDISTRO | egrep -iq "ubuntu"
+	elif echo $OSDISTRO | grep -Eiq "ubuntu"
 	then
 		main_ubuntu
-    elif echo $OSDISTRO | egrep -iq "amazon"
+    elif echo $OSDISTRO | grep -Eiq "amazon"
     then
         main_amazon
-    elif echo $OSDISTRO | egrep -iq "sles"
+    elif echo $OSDISTRO | grep -Eiq "sles"
     then
         main_sles
 	else
