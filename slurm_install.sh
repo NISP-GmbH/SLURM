@@ -954,9 +954,9 @@ enableSystemdServices()
 
 createRequiredFiles()
 {
-	sudo mkdir /var/spool/slurm
-	sudo mkdir /var/spool/slurm/slurmctld
-	sudo mkdir /var/spool/slurm/cluster_state
+	sudo mkdir -p /var/spool/slurm
+	sudo mkdir -p /var/spool/slurm/slurmctld
+	sudo mkdir -p /var/spool/slurm/cluster_state
 	sudo touch /var/log/slurmctld.log
 	sudo touch /var/log/slurm_jobacct.log /var/log/slurm_jobcomp.log
 }
@@ -978,7 +978,11 @@ fixingPermissions()
 createRequiredUsers()
 {
 	export MUNGEUSER=966
-	sudo groupadd -g $MUNGEUSER munge
+	if ! getent group munge &> /dev/null
+	then
+		sudo groupadd -g $MUNGEUSER munge
+	fi
+
 	if ! id munge &> /dev/null
 	then
 		sudo useradd  -m -c "MUNGE Uid 'N' Gid Emporium" -d /var/lib/munge -u $MUNGEUSER -g munge  -s /sbin/nologin munge
@@ -991,7 +995,10 @@ createRequiredUsers()
 		sudo groupadd -g $SLURMUSER slurm
 	fi
 
-	sudo useradd  -m -c "SLURM workload manager" -d /var/lib/slurm -u $SLURMUSER -g slurm  -s /bin/bash slurm
+	if ! id slurm &> /dev/null
+	then
+		sudo useradd  -m -c "SLURM workload manager" -d /var/lib/slurm -u $SLURMUSER -g slurm  -s /bin/bash slurm
+	fi
 }
 
 askSlurmAccountingSupport()
@@ -1109,7 +1116,7 @@ setupSlurmForSles()
 	# Feel free to adapt to your needs
 	HOST=`hostname`
 
-	sudo mkdir /etc/slurm/
+	sudo mkdir -p /etc/slurm/
 	ProctrackType="cgroup"
 
 	cat << EOF | sudo tee /etc/slurm/slurm.conf
@@ -1259,7 +1266,7 @@ buildSlurmForSles()
     sudo gem install public_suffix -v 4.0.7
     sudo gem install fpm -v 1.14.2
 
-    mkdir slurm-tmp
+    mkdir -p slurm-tmp
     cd slurm-tmp
 
 	if [ "$SLURM_VERSION" == "" ]
@@ -1412,7 +1419,7 @@ setupSlurmForUbuntu()
 	# Feel free to adapt to your needs
 	HOST=`hostname`
 
-	sudo mkdir /etc/slurm/
+	sudo mkdir -p /etc/slurm/
     if [[ $(echo "$VERSION_ID >= 22.04" | bc -l) -eq 1 ]]
     then
 		ProctrackType="linuxproc"
@@ -1575,7 +1582,7 @@ buildSlurmForUbuntu()
 
 	sudo DEBIAN_FRONTEND=noninteractive apt -y install bzip2 python3 gcc openssl numactl hwloc lua5.3 man2html make ruby ruby-dev libmunge-dev libpam0g-dev libdbus-1-dev
 	sudo /usr/bin/gem install fpm
-    mkdir slurm-tmp
+    mkdir -p slurm-tmp
     cd slurm-tmp
 
 	if [ "$SLURM_VERSION" == "" ]
