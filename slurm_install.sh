@@ -17,8 +17,8 @@
 
 main_amazon()
 {
-    disableSElinux
     checkAmazonVersion
+    disableSElinuxForAmazon
     createRequiredUsers
     installMariaDBforAmazon
     installMungeForAmazon
@@ -33,7 +33,7 @@ main_amazon()
     exit 0
 }
 
-disableSElinux()
+disableSElinuxForAmazon()
 {
     if [ "$slurm_accounting_support" == "1" ]
     then
@@ -71,7 +71,7 @@ installMariaDBforAmazon()
                 sudo systemctl start --now mariadb
                 if [ $? -ne 0 ]
                 then
-i                    echo "Failed to setup mariadb-server. Exiting..."
+                    echo "Failed to setup mariadb-server. Exiting..."
                     exit 3
                 fi
             fi
@@ -268,7 +268,7 @@ setupSlurmForAmazon()
         sudo yum --nogpgcheck localinstall slurm-[0-9]*.el*.x86_64.rpm slurm-contribs-*.el*.x86_64.rpm slurm-devel-*.el*.x86_64.rpm slurm-example-configs-*.el*.x86_64.rpm slurm-libpmi-*.el*.x86_64.rpm slurm-pam_slurm-*.el*.x86_64.rpm slurm-perlapi-*.el*.x86_64.rpm slurm-slurmctld-*.el*.x86_64.rpm slurm-slurmd-*.el*.x86_64.rpm slurm-slurmdbd-*.el*.x86_64.rpm -y
     else
         cd ~/rpmbuild/RPMS/aarch64/
-        sudo yum --nogpgcheck localinstall slurm-[0-9]*.el*.aarch64.rpm slurm-pam_slurm-[0-9]*.el*.aarch64.rpm slurm-contribs-[0-9]*.el*.aarch64.rpm slurm-perlapi-[0-9]*.el*.aarch64.rpm slurm-devel-[0-9]*-1.el*.aarch64.rpm slurm-slurmctld-[0-9]*.el*.aarch64.rpm slurm-example-configs-[0-9]*.el*.aarch64.rpm slurm-slurmd-[0-9]*.el*.aarch64.rpm slurm-libpmi-[0-9]*.el*.aarch64.rpm slurm-slurmdbd-[0-9]*.el*.aarch64.rpm slurm-openlava-[0-9]*.el*.aarch64.rpm slurm-torque-[0-9]*.el*.aarch64.rpm
+        sudo yum --nogpgcheck localinstall slurm-[0-9]*.el*.aarch64.rpm slurm-pam_slurm-[0-9]*.el*.aarch64.rpm slurm-contribs-[0-9]*.el*.aarch64.rpm slurm-perlapi-[0-9]*.el*.aarch64.rpm slurm-devel-[0-9]*-1.el*.aarch64.rpm slurm-slurmctld-[0-9]*.el*.aarch64.rpm slurm-example-configs-[0-9]*.el*.aarch64.rpm slurm-slurmd-[0-9]*.el*.aarch64.rpm slurm-libpmi-[0-9]*.el*.aarch64.rpm slurm-slurmdbd-[0-9]*.el*.aarch64.rpm slurm-openlava-[0-9]*.el*.aarch64.rpm slurm-torque-[0-9]*.el*.aarch64.rpm -y
 
     fi
 
@@ -406,8 +406,9 @@ EOF
 }
 main_redhat()
 {
-    disableSElinux
     checkRedHatBasedVersion
+    getRedHatBasedCrbRepo
+    disableSElinuxForRedHatBased
     createRequiredUsers
     setupRequiredRedHatBasedRepositories
     installMariaDBforRedHatBased
@@ -433,7 +434,7 @@ setupSlurmForRedHatBased()
 	    sudo yum --nogpgcheck localinstall slurm-[0-9]*.el*.x86_64.rpm slurm-contribs-*.el*.x86_64.rpm slurm-devel-*.el*.x86_64.rpm slurm-example-configs-*.el*.x86_64.rpm slurm-libpmi-*.el*.x86_64.rpm slurm-pam_slurm-*.el*.x86_64.rpm slurm-perlapi-*.el*.x86_64.rpm slurm-slurmctld-*.el*.x86_64.rpm slurm-slurmd-*.el*.x86_64.rpm slurm-slurmdbd-*.el*.x86_64.rpm -y
     else
     	cd ~/rpmbuild/RPMS/aarch64/
-        sudo yum --nogpgcheck localinstall slurm-[0-9]*.el*.aarch64.rpm slurm-pam_slurm-[0-9]*.el*.aarch64.rpm slurm-contribs-[0-9]*.el*.aarch64.rpm slurm-perlapi-[0-9]*.el*.aarch64.rpm slurm-devel-[0-9]*-1.el*.aarch64.rpm slurm-slurmctld-[0-9]*.el*.aarch64.rpm slurm-example-configs-[0-9]*.el*.aarch64.rpm slurm-slurmd-[0-9]*.el*.aarch64.rpm slurm-libpmi-[0-9]*.el*.aarch64.rpm slurm-slurmdbd-[0-9]*.el*.aarch64.rpm slurm-openlava-[0-9]*.el*.aarch64.rpm slurm-torque-[0-9]*.el*.aarch64.rpm
+        sudo yum --nogpgcheck localinstall slurm-[0-9]*.el*.aarch64.rpm slurm-pam_slurm-[0-9]*.el*.aarch64.rpm slurm-contribs-[0-9]*.el*.aarch64.rpm slurm-perlapi-[0-9]*.el*.aarch64.rpm slurm-devel-[0-9]*-1.el*.aarch64.rpm slurm-slurmctld-[0-9]*.el*.aarch64.rpm slurm-example-configs-[0-9]*.el*.aarch64.rpm slurm-slurmd-[0-9]*.el*.aarch64.rpm slurm-libpmi-[0-9]*.el*.aarch64.rpm slurm-slurmdbd-[0-9]*.el*.aarch64.rpm slurm-openlava-[0-9]*.el*.aarch64.rpm slurm-torque-[0-9]*.el*.aarch64.rpm -y
         
     fi
 
@@ -539,25 +540,16 @@ LogFile=/var/log/slurmdbd.log
 EOF
     fi
 
-    if [ "$OSVERSION" == "9" ]
+    # el10 is cgroup v2 only; el9 is v2 by default but can be booted with v1,
+    # so probe the running system instead of keying off the OS version
+    if [ -f /sys/fs/cgroup/cgroup.controllers ]
     then
-        cat << EOF | sudo tee /etc/slurm/cgroup.conf
-###
-#
-# Slurm cgroup support configuration file
-#
-# See man slurm.conf and man cgroup.conf for further
-# information on cgroup configuration parameters
-#--
-CgroupPlugin=cgroup/v2
-# CgroupAutomount=yes
-
-ConstrainCores=no
-ConstrainRAMSpace=no
-EOF
-
+        CGROUP_VERSION=v2
     else
-		cat << EOF | sudo tee /etc/slurm/cgroup.conf
+        CGROUP_VERSION=v1
+    fi
+
+    cat << EOF | sudo tee /etc/slurm/cgroup.conf
 ###
 #
 # Slurm cgroup support configuration file
@@ -565,13 +557,12 @@ EOF
 # See man slurm.conf and man cgroup.conf for further
 # information on cgroup configuration parameters
 #--
-CgroupPlugin=cgroup/v1
+CgroupPlugin=cgroup/${CGROUP_VERSION}
 # CgroupAutomount=yes
 
 ConstrainCores=no
 ConstrainRAMSpace=no
 EOF
-    fi
 
 		if [ ! -f /etc/my.cnf.d/slurm.cnf  ]
         then
@@ -593,46 +584,48 @@ EOF
 buildSlurmForRedHatBased()
 {
 	# build and install SLURM
-	sudo yum install python3 gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build  perl-ExtUtils-MakeMaker.noarch -y
+	COMMON_PKGS="python3 gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibumad rpm-build perl-ExtUtils-MakeMaker.noarch"
+
+	# --skip-broken keeps a single renamed/retired package from aborting the whole
+	# transaction (portable across yum-3 on el7 and dnf on el8+)
+	if [ "$OSVERSION" == "10" ]
+	then
+	    # libibmad was dropped from el10 (rdma-core); libibumad remains
+	    sudo yum install --skip-broken ${COMMON_PKGS} -y
+	else
+	    sudo yum install --skip-broken ${COMMON_PKGS} libibmad -y
+	fi
+
 	if [ "$OSVERSION" == "7" ]
 	then
 		sudo yum install rrdtool-devel lua-devel hwloc-devel -y
-	fi
-	if [ "$OSVERSION" == "8" ]
-	then
-	    sudo yum install rpm-build make autoconf automake dbus-devel -y
-        if $ISOSREDHAT
-        then
-            sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
-            sudo dnf install rrdtool-devel lua-devel hwloc-devel rpm-build -y
-        else
-	        sudo dnf --enablerepo=powertools install rrdtool-devel lua-devel hwloc-devel rpm-build -y
-        fi
-	fi
-	if [ "$OSVERSION" == "9" ]
-	then
-    	sudo yum install rpm-build make autoconf automake dbus-devel -y
-        if $ISOSREDHAT
-        then
-            sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
-            sudo dnf install rrdtool-devel lua-devel hwloc-devel rpm-build -y
-        else
-    	    sudo dnf --enablerepo=crb install rrdtool-devel lua-devel hwloc-devel -y
-        fi
+	else
+		sudo yum install rpm-build make autoconf automake dbus-devel -y
+		# hwloc-devel lives in CRB on el8/9 and in AppStream on el10; --enablerepo
+		# is additive, so the same line resolves everywhere
+		sudo dnf --enablerepo=${CRBREPO} install rrdtool-devel lua-devel hwloc-devel rpm-build -y
 	fi
 
 	mkdir -p slurm-tmp
 	cd slurm-tmp
 
-	if [ "$SLURM_VERSION" == "" ]; then
-	    export SLURM_VERSION=22.05.9
+	if [ "$SLURM_VERSION" == "" ]
+	then
+	    if [ "$OSVERSION" == "10" ]
+	    then
+	        # 22.05.9 (2022) does not build against el10's toolchain (gcc 14, openssl 3.5)
+	        export SLURM_VERSION=25.11.8
+	    else
+	        export SLURM_VERSION=22.05.9
+	    fi
 	fi
 	wget --no-check-certificate https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2
 
 	[ $? != 0 ] && echo Problem downloading https://download.schedmd.com/slurm/slurm-${SLURM_VERSION}.tar.bz2 ... Exiting && exit
 
-	if [ "$OSVERSION" == "9" ] ; then
-	    # fix LTO issue on 9
+	if [ "$OSVERSION" == "9" ] || [ "$OSVERSION" == "10" ]
+	then
+	    # fix LTO issue on 9 and later
 	    # https://bugs.schedmd.com/show_bug.cgi?id=14565
 	    rpmbuild -ta slurm-${SLURM_VERSION}.tar.bz2 --define '_lto_cflags %{nil}' --with mysql
 	else
@@ -641,7 +634,7 @@ buildSlurmForRedHatBased()
 
 	rm slurm-${SLURM_VERSION}.tar.bz2
 	cd ..
-	rmdir slurm-tmp
+	rm -rf slurm-tmp
 
 	# get perl-Switch
 	# sudo yum install cpan -y
@@ -649,7 +642,14 @@ buildSlurmForRedHatBased()
 
 setupMungeForRedHatBased()
 {
-	sudo /usr/sbin/create-munge-key -r -f
+	# munge 0.5.14+ (el10) ships mungekey and no longer provides create-munge-key
+	if [ -x /usr/sbin/mungekey ]
+	then
+	    sudo /usr/sbin/mungekey -f
+	else
+	    sudo /usr/sbin/create-munge-key -r -f
+	fi
+
 	sudo sh -c  "dd if=/dev/urandom bs=1 count=1024 > /etc/munge/munge.key"
 	sudo chown munge: /etc/munge/munge.key
 	sudo chmod 400 /etc/munge/munge.key
@@ -664,47 +664,31 @@ setupRngToolsForRedHatBased()
 	sudo rngd -r /dev/urandom
 }
 
-disableSElinux()
+disableSElinuxForRedHatBased()
 {
 	if [ "$slurm_accounting_support" == "1" ]
 	then
 	    # SLURM accounting support
-	    if [ "$OSVERSION" == "9" ] ; then
+	    if [ "$OSVERSION" == "9" ] || [ "$OSVERSION" == "10" ]
+	    then
 	        sudo setenforce 0
 	        cat << EOF | sudo tee /etc/selinux/config
 SELINUX=disabled
 SELINUXTYPE=targeted
 EOF
-    	fi
+	    fi
 	fi
 }
 
 installMungeForRedHatBased()
 {
 	if [ "$OSVERSION" == "7" ]
-    then
+	then
 	    sudo yum install munge munge-libs munge-devel -y
-	fi
-	if [ "$OSVERSION" == "8" ]
-    then
-        if $ISOSREDHAT
-        then
-            sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
-	        sudo yum install munge munge-libs munge-devel -y
-        else
-	        sudo dnf --enablerepo=powertools install munge munge-libs munge-devel -y
-        fi 
-
-	fi
-	if [ "$OSVERSION" == "9" ]
-    then
-        if $ISOSREDHAT
-        then
-            sudo dnf config-manager --set-enabled codeready-builder-for-rhel-${OSVERSION}-x86_64-rpms
-            sudo dnf install munge-devel munge munge-libs -y
-        else
-            sudo dnf --enablerepo=crb install munge munge-libs munge-devel -y
-        fi 
+	else
+	    # el8/9: all three come from PowerTools/CRB
+	    # el10: munge and munge-libs moved to AppStream, munge-devel stayed in CRB
+	    sudo dnf --enablerepo=${CRBREPO} install munge munge-libs munge-devel -y
 	fi
 }
 
@@ -714,59 +698,55 @@ installMariaDBforRedHatBased()
 	then
 		if ! rpm -qa | grep -Eiq mariadb-server
 		then
-        	# SLURM accounting support
-        	if [ "$OSVERSION" == "9" ]
-			then
-        		sudo yum install MariaDB-server MariaDB-devel dnf -y
-        	    sudo systemctl enable --now mariadb
-        	else
-            	sudo yum install MariaDB-server MariaDB-devel dnf -y
-            	sudo systemctl enable --now mariadb
-        	fi
+			sudo yum install MariaDB-server MariaDB-devel dnf -y
+			sudo systemctl enable --now mariadb
 		fi
-    else
-        sudo yum install MariaDB-server MariaDB-devel dnf -y
+	else
+		sudo yum install MariaDB-server MariaDB-devel dnf -y
 	fi
 }
 
 checkRedHatBasedVersion()
 {
-	OSVERSION="7"
-	# [ "`hostnamectl | grep Kernel | grep el8`" != "" ] && OSVERSION="8"
 	. /etc/os-release
+	OSVERSION="${VERSION_ID%%.*}"
 
-	if [[ $VERSION =~ ^8 ]]
-	then
-    OSVERSION="8"
-    # in case of repo access issues uncomment the following lines
-    # sudo sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
-    # sudo sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
-	fi
+	case "$OSVERSION" in
+	    7|8|9|10)
+	        ;;
+	    *)
+	        echo "Red Hat based version >>> ${VERSION_ID} <<< is not supported! Exiting..."
+	        echo "Supported distros: ${SUPPORTED_DISTROS}"
+	        exit 2
+	        ;;
+	esac
+}
 
-	if [[ $VERSION =~ ^9 ]]
+# CRB (CodeReady Builder) holds part of the build dependencies and is disabled by
+# default. Its name differs per distro and version, so resolve it once and let
+# every caller pass --enablerepo instead of mutating the repo configuration.
+getRedHatBasedCrbRepo()
+{
+	if [ "$OSVERSION" == "7" ]
 	then
-	    OSVERSION="9"
+	    # el7 has no CRB/PowerTools equivalent
+	    CRBREPO=""
+	elif $ISOSREDHAT
+	then
+	    CRBREPO="codeready-builder-for-rhel-${OSVERSION}-$(uname -m)-rpms"
+	elif [ "$OSVERSION" == "8" ]
+	then
+	    CRBREPO="powertools"
+	else
+	    CRBREPO="crb"
 	fi
 }
 
 setupRequiredRedHatBasedRepositories()
 {
 	sudo yum install epel-release -y
-	if [ "$OSVERSION" == "7" ] ; then
-	    sudo curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | sudo bash
-	    sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y
-	    # sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-	fi
-	if [ "$OSVERSION" == "8" ] ; then
-	    sudo curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | sudo bash
-	    sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
-	    # sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-	fi
-	if [ "$OSVERSION" == "9" ] ; then
-	    sudo curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | sudo bash
-	    sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y
-	    # sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-	fi
+	sudo curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | sudo bash
+	sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OSVERSION}.noarch.rpm -y
 }
 welcomeMessage()
 {
@@ -806,7 +786,11 @@ checkLinuxOsDistro()
     if [ -f /etc/redhat-release ]
     then
         OSDISTRO="redhat_based"
-        if hostnamectl | grep -Ei "operating system" | grep -Eiq "red hat enterprise"
+        # prefer /etc/os-release: hostnamectl is missing in minimal images
+        if grep -Eq '^ID="?rhel"?$' /etc/os-release 2> /dev/null
+        then
+            ISOSREDHAT="true"
+        elif hostnamectl 2> /dev/null | grep -Ei "operating system" | grep -Eiq "red hat enterprise"
         then
             ISOSREDHAT="true"
         fi
@@ -995,7 +979,7 @@ createRequiredUsers()
 {
 	export MUNGEUSER=966
 	sudo groupadd -g $MUNGEUSER munge
-	if ! id "$USERNAME" &> /dev/null
+	if ! id munge &> /dev/null
 	then
 		sudo useradd  -m -c "MUNGE Uid 'N' Gid Emporium" -d /var/lib/munge -u $MUNGEUSER -g munge  -s /sbin/nologin munge
 	fi
@@ -1685,8 +1669,9 @@ setupRequiredUbuntuRepositories()
 OSVERSION=""
 OSDISTRO=""
 OSARCH=""
+CRBREPO=""
 ISOSREDHAT="false"
-SUPPORTED_DISTROS="Centos, Rocky Linux and Almalinux: 7, 8 and 9; Ubuntu: 18.04, 20.04, 22.04 and 24.04; Amazon Linux: 2023."
+SUPPORTED_DISTROS="Centos, Rocky Linux and Almalinux: 7, 8, 9 and 10; Ubuntu: 18.04, 20.04, 22.04 and 24.04; Amazon Linux: 2023; SLES/OpenSUSE: 15."
 slurm_accounting_support=0
 without_interaction="false"
 mysql_root_password=""

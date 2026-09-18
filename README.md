@@ -6,9 +6,9 @@ A script that downloads, extracts, compiles and installs Slurm for you - includi
 ## Supported OS
 
 - Ubuntu: 18.04, 20.04, 22.04, 24.04
-- RH/Centos: 7, 8 and 9
-- Rocky Linux: 7, 8 and 9
-- Alma Linux: 7, 8 and 9
+- RH/Centos: 7, 8, 9 and 10
+- Rocky Linux: 7, 8, 9 and 10
+- Alma Linux: 7, 8, 9 and 10
 - Amazon Linux: 2023
 - SLES / OpenSUSE: 15
 
@@ -21,7 +21,7 @@ A script that downloads, extracts, compiles and installs Slurm for you - includi
 - Can use an already installed MySQL/MariaDB server
 - Can install MariaDB
 - Change the SLURM version via environment variable
-- Support for cgroups/v2 to Ubuntu 22.04+ and Red Hat 9 based distributions
+- Support for cgroups/v2 to Ubuntu 22.04+ and Red Hat 9+ based distributions (auto-detected at install time)
 
 ## How to customize the SLURM version
 
@@ -31,6 +31,9 @@ For example:
 ```bash
 export SLURM_VERSION=24.05.2
 ```
+
+**Note:** Red Hat based 10 defaults to SLURM 25.11.8, since older SLURM releases do not build
+against the el10 toolchain. Red Hat based 7, 8 and 9 keep their previous default.
 
 ## How to install with interaction
 
